@@ -44,8 +44,8 @@
 <svelte:head>
   <meta name="description" content="Xiaozhe's personal web portal — writing, projects and experiments." />
   <meta name="theme-color" content={dark ? '#0d1016' : '#fafbfc'} />
-  <link rel="icon" type="image/png" href="/images/xiaozhe-logo.png" />
-  <link rel="apple-touch-icon" href="/images/xiaozhe-logo.png" />
+  <link rel="icon" type="image/jpeg" href="/images/xiaozhe-avatar.jpg" />
+  <link rel="apple-touch-icon" href="/images/xiaozhe-avatar.jpg" />
   <link rel="canonical" href={`https://xiaozhe.dev${page.url.pathname}`} />
   <meta property="og:title" content="Xiaozhe — Web / AI / Systems" />
   <meta property="og:description" content="Writing, projects and experiments from Xiaozhe." />

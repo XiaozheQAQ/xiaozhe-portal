@@ -45,7 +45,7 @@
 <header class="site-header">
   <div class="header-inner">
     <a href="/" class="brand" aria-label="Xiaozhe home">
-      <img class="brand-avatar" src="/images/xiaozhe-logo.png" alt="Xiaozhe Nice" />
+      <img class="brand-avatar" src="/images/xiaozhe-avatar.jpg" alt="Xiaozhe Nice" />
       <span class="brand-name">Xiaozhe Nice</span>
       <span class="brand-section">{i18n.t('brand.blog')}</span>
     </a>
