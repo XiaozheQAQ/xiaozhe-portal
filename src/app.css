@@ -89,6 +89,222 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 ::selection { background: color-mix(in srgb, var(--accent) 22%, transparent); }
 a { color: inherit; text-decoration: none; }
 button, input { font: inherit; }
+/* Images and links stay put: dragging them out of the page is never useful here. */
+img, picture, video, a { -webkit-user-drag: none; }
+
+/* Progressive image: stable placeholder + centered ring spinner + fade-in */
+.progressive-image {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--line) 24%, var(--surface));
+}
+.progressive-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: var(--pi-fit, cover);
+}
+.progressive-image.pi-js img {
+  transition: opacity .2s ease, transform .24s ease;
+}
+.progressive-image.pi-js.is-loading img,
+.progressive-image.pi-js.is-error img {
+  opacity: 0;
+}
+.progressive-image__spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: none;
+  width: var(--pi-spinner, 26px);
+  height: var(--pi-spinner, 26px);
+  margin: calc(var(--pi-spinner, 26px) / -2) 0 0 calc(var(--pi-spinner, 26px) / -2);
+  border: 2px solid color-mix(in srgb, var(--line) 82%, var(--muted));
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: progressive-spin .75s linear infinite;
+}
+.progressive-image.pi-js.is-loading .progressive-image__spinner { display: block; }
+.progressive-image__error {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 1.15rem;
+  pointer-events: none;
+}
+.progressive-image.pi-js.is-error .progressive-image__error { display: flex; }
+@keyframes progressive-spin { to { transform: rotate(360deg); } }
+
+/* Markdown body images: keep intrinsic ratio and inline flow. The placeholder
+   box is present in the SSR HTML (no .pi-js), so space is reserved before
+   hydration; the spinner and fade stay gated behind .pi-js. */
+.progressive-image--md {
+  height: auto;
+  background: transparent;
+}
+.progressive-image--md img { height: auto; }
+.progressive-image--md.is-loading,
+.progressive-image--md.is-error {
+  min-height: 2.5rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--line) 22%, var(--surface));
+}
+/* With a reliable ratio (explicit size or ratio=), reserve that exact ratio
+   while loading instead of a fixed min-height. */
+.progressive-image--md.has-ratio.is-loading {
+  aspect-ratio: var(--pi-md-ratio, auto);
+  min-height: 0;
+}
+
+/* Zoomable images: the same progressive box, promoted to a button. */
+button.progressive-image {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  cursor: zoom-in;
+}
+button.progressive-image:hover .progressive-image__img { transform: scale(1.012); }
+.prose .progressive-image[role='button'] { cursor: zoom-in; }
+.prose .progressive-image[role='button']:focus-visible,
+button.progressive-image:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* Image viewer overlay: one shared instance per page, dark stage in both themes. */
+body.image-viewer-open { overflow: hidden; }
+.image-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: image-viewer-fade .18s ease;
+}
+.image-viewer__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  background: color-mix(in srgb, #05070c 88%, transparent);
+  backdrop-filter: blur(6px);
+  cursor: zoom-out;
+}
+.image-viewer__stage {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: min(1200px, 92vw);
+  margin: 0;
+  animation: image-viewer-zoom .2s cubic-bezier(.22, .8, .24, 1);
+}
+.image-viewer__img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: calc(100vh - 132px);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 24px 64px rgba(3, 6, 12, .48);
+}
+.image-viewer__caption {
+  max-width: min(720px, 88vw);
+  color: color-mix(in srgb, #ffffff 80%, transparent);
+  font-size: .84rem;
+  line-height: 1.6;
+  text-align: center;
+}
+.image-viewer__spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  border: 2px solid color-mix(in srgb, #ffffff 24%, transparent);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: progressive-spin .75s linear infinite;
+}
+.image-viewer__error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transform: translate(-50%, -50%);
+  color: color-mix(in srgb, #ffffff 84%, transparent);
+  font-size: .9rem;
+}
+.image-viewer__control {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  margin: 0;
+  border: 1px solid color-mix(in srgb, #ffffff 18%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, #0b0e14 58%, transparent);
+  color: #ffffff;
+  font-size: 1.32rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease;
+}
+.image-viewer__control:hover { background: color-mix(in srgb, #0b0e14 82%, transparent); border-color: color-mix(in srgb, #ffffff 34%, transparent); }
+.image-viewer__control:focus-visible { outline: 2px solid #ffffff; outline-offset: 2px; }
+.image-viewer__close { top: 20px; right: 20px; }
+.image-viewer__nav { top: 50%; margin-top: -21px; }
+.image-viewer__nav.is-prev { left: 20px; }
+.image-viewer__nav.is-next { right: 20px; }
+.image-viewer__counter {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  z-index: 2;
+  margin: 0;
+  padding: 5px 12px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: color-mix(in srgb, #0b0e14 58%, transparent);
+  color: color-mix(in srgb, #ffffff 88%, transparent);
+  font-size: .76rem;
+  font-variant-numeric: tabular-nums;
+}
+@keyframes image-viewer-fade { from { opacity: 0; } }
+@keyframes image-viewer-zoom { from { opacity: 0; transform: scale(.96); } }
+
+@media (max-width: 640px) {
+  .image-viewer { padding: 14px; }
+  .image-viewer__img { max-height: calc(100vh - 160px); border-radius: 10px; }
+  .image-viewer__control { width: 38px; height: 38px; font-size: 1.2rem; }
+  .image-viewer__nav { margin-top: -19px; }
+  .image-viewer__nav.is-prev { left: 8px; }
+  .image-viewer__nav.is-next { right: 8px; }
+  .image-viewer__close { top: 12px; right: 12px; }
+  .image-viewer__counter { bottom: 14px; }
+}
 
 .prose {
   max-width: 760px;
@@ -266,13 +482,13 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
 .lab-card-description { margin-top: 5px; color: var(--muted); font-size: .84rem; line-height: 1.65; }
 .lab-card-tags { display: flex; flex-wrap: wrap; gap: 6px 10px; margin-top: 12px; color: var(--muted); font-family: var(--font-mono); font-size: .66rem; }
 .lab-card-tags span::before { content: '#'; color: var(--accent); }
-.lab-group { margin-top: 34px; }
+.lab-group { margin-top: 24px; }
 .lab-group-heading { display: flex; align-items: end; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
 .lab-group-heading .eyebrow { display: flex; align-items: center; gap: 6px; }
 .lab-group-count { margin-top: 5px; color: var(--muted); font-size: .78rem; }
 .lab-empty { border: 1px dashed var(--line); border-radius: 14px; margin-top: 14px; padding: 28px 16px; color: var(--muted); font-size: .86rem; text-align: center; }
 .status-page { padding-bottom: 24px; }
-.status-section { margin-top: 42px; }
+.status-section { margin-top: 28px; }
 .status-section-heading { margin-bottom: 16px; }
 .status-section-heading-row { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
 .status-section-heading .eyebrow { display: flex; align-items: center; gap: 6px; }
@@ -308,6 +524,7 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
 .schedule-status-badge { border-radius: 999px; padding: 2px 7px; font-family: var(--font-mono); font-size: .64rem; font-weight: 650; white-space: nowrap; }
 .status-badge-live { border: 1px solid color-mix(in srgb, #2c9b67 45%, var(--line)); color: #258357; background: color-mix(in srgb, #2c9b67 12%, transparent); }
 .status-badge-break { border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line)); color: var(--accent); background: var(--accent-soft); }
+.status-badge-next { border: 1px solid color-mix(in srgb, var(--line) 80%, transparent); color: var(--muted); background: color-mix(in srgb, var(--surface) 90%, var(--bg)); }
 .schedule-agenda-block { margin-top: 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); padding: 18px; }
 .schedule-block-title { display: flex; align-items: center; gap: 7px; margin: 0 0 12px; font-size: .88rem; font-weight: 650; color: var(--text); }
 .schedule-agenda-list { display: grid; gap: 8px; }
@@ -330,6 +547,10 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
 .practice-details dd { margin: 2px 0 0; color: var(--text); font-weight: 550; }
 .practice-note { display: flex; align-items: center; gap: 5px; font-size: .72rem; color: var(--muted); margin: 0; }
 .schedule-footer-meta { display: flex; align-items: center; gap: 7px; margin-top: 14px; color: var(--muted); font-size: .75rem; font-family: var(--font-mono); }
+.schedule-room-guide-desc { margin: -4px 0 12px; color: var(--muted); font-size: .76rem; line-height: 1.6; }
+.room-guide-route { margin: 0 0 8px; color: var(--text); font-size: .78rem; line-height: 1.62; }
+.room-change-notice { display: flex; align-items: flex-start; gap: 7px; margin: 12px 0 0; border-top: 1px dashed var(--line); padding-top: 12px; color: var(--muted); font-size: .74rem; line-height: 1.6; }
+.room-change-notice strong { color: var(--text); font-weight: 650; }
 .lab-detail { max-width: 900px; }
 .lab-detail-header { border-bottom: 1px solid var(--line); padding-bottom: 24px; }
 .lab-detail-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }

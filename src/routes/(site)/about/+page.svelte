@@ -1,5 +1,6 @@
 <script lang="ts">
   import { useI18n } from '#lib/i18n';
+  import ProgressiveImage from '#lib/components/common/ProgressiveImage.svelte';
   const i18n = useI18n();
 
   // Tech stack categorized by domain
@@ -93,12 +94,14 @@
     <section class="about-card about-card-main">
       <div class="about-card-badge">PROFILE // 01</div>
       <div class="about-main-body">
-        <img
+        <ProgressiveImage
+          class="about-main-avatar"
           src="/images/xiaozhe-avatar.jpg"
           alt="Xiaozhe Nice"
-          class="about-main-avatar"
-          width="88"
-          height="88"
+          width={88}
+          height={88}
+          priority
+          spinnerSize={20}
         />
         <div class="about-main-info">
           <div class="about-main-heading">

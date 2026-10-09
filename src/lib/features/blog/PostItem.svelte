@@ -1,5 +1,6 @@
 <script lang="ts">
   import { useI18n } from '#lib/i18n';
+  import ProgressiveImage from '#lib/components/common/ProgressiveImage.svelte';
   let { post, index = 0 }: {
     post: { slug: string; data: { title: string; description: string; date: string; tags: string[]; language: string; cover?: string } };
     index?: number;
@@ -12,7 +13,7 @@
   <div class:has-cover={Boolean(post.data.cover)} class="blog-item-grid grid gap-5 sm:items-center">
     {#if post.data.cover}
       <div class="blog-item-cover">
-        <img src={post.data.cover} alt="" loading="lazy" />
+        <ProgressiveImage src={post.data.cover} alt="" />
       </div>
     {/if}
     <div class="blog-item-copy">

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { useI18n } from '#lib/i18n';
   import MarkdownContent from '#lib/components/content/MarkdownContent.svelte';
+  import ProgressiveImage from '#lib/components/common/ProgressiveImage.svelte';
   import { onMount } from 'svelte';
   let { data } = $props();
   const i18n = useI18n();
@@ -39,7 +40,7 @@
     <div class="mt-4 font-mono text-xs text-[var(--muted)]">{data.post.readingTime} {$i18n === 'zh-CN' ? '分钟阅读' : 'min read'} · {data.post.wordCount} {$i18n === 'zh-CN' ? '字' : 'words'}</div>
     {#if data.post.data.cover}
       <div class="article-cover">
-        <img src={data.post.data.cover} alt="" width="1600" height="900" fetchpriority="high" />
+        <ProgressiveImage src={data.post.data.cover} alt="" width={1600} height={900} priority zoomable />
       </div>
     {/if}
     <MarkdownContent html={data.post.html} className="prose mt-12" />

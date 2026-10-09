@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { useI18n } from '#lib/i18n';
-  import { courses, statusServices, getScheduleDetails, semesterInfo } from '#lib/status/schedule';
+  import { courses, statusServices, getScheduleDetails, semesterInfo, type RoomGuide } from '#lib/status/schedule';
 
   type CheckState = 'checking' | 'healthy' | 'unhealthy' | 'unconfigured';
   type Check = { state: CheckState; responseTime?: number; checkedAt?: Date };
@@ -82,6 +82,17 @@
     return i18n.t(statusLabels[state]);
   }
 
+  function roomAccessLabel(guide: RoomGuide) {
+    const base =
+      guide.access === 'elevator'
+        ? i18n.t('status.elevator.yes')
+        : guide.access === 'stairs'
+          ? i18n.t('status.elevator.no')
+          : i18n.t('status.elevator.ground');
+    if (!guide.side) return base;
+    return base + ' · ' + i18n.t(guide.side === 'left' ? 'status.side.left' : 'status.side.right');
+  }
+
   onMount(() => {
     now = new Date();
     const clock = window.setInterval(() => (now = new Date()), 1000);
@@ -110,7 +121,7 @@
 </svelte:head>
 
 <div class="status-page" data-locale={$locale}>
-  <section class="pb-12 pt-5 lg:pt-7">
+  <section class="pb-2 pt-5 lg:pt-7">
     <p class="eyebrow">{i18n.t('page.statusEyebrow')}</p>
     <h1 class="mt-3 text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">{i18n.t('page.status')}</h1>
     <p class="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">{i18n.t('page.statusDescription')}</p>
@@ -153,6 +164,10 @@
               <span class="schedule-status-badge status-badge-live">{i18n.t('status.inSession')}</span>
             {:else if schedule?.breakCourse}
               <span class="schedule-status-badge status-badge-break">{i18n.t('status.inBreak')}</span>
+            {:else if schedule?.nextCourse && schedule.minutesUntilNext !== null}
+              <span class="schedule-status-badge status-badge-next">
+                {i18n.t('status.countdown').replace('{minutes}', String(schedule.minutesUntilNext))}
+              </span>
             {/if}
           </div>
 
@@ -245,6 +260,38 @@
             </div>
           {/each}
         </div>
+      </div>
+    {/if}
+
+    {#if schedule && schedule.todayRoomGuides.length > 0}
+      <div class="practice-block room-guide-block">
+        <h3 class="schedule-block-title">
+          <i class="ri-route-line" aria-hidden="true"></i> {i18n.t('status.roomGuideTitle')}
+        </h3>
+        <p class="schedule-room-guide-desc">{i18n.t('status.roomGuideDescription')}</p>
+        <div class="practice-grid">
+          {#each schedule.todayRoomGuides as guide}
+            <div class="practice-card">
+              <div class="practice-card-header">
+                <span class="practice-name">{guide.room}</span>
+                <span class="practice-badge">{roomAccessLabel(guide)}</span>
+              </div>
+              <p class="room-guide-route">{guide.route}</p>
+              {#if guide.note}
+                <p class="practice-note"><i class="ri-bookmark-3-line" aria-hidden="true"></i> {guide.note}</p>
+              {/if}
+            </div>
+          {/each}
+        </div>
+        {#if schedule.roomChangeNotice}
+          <p class="room-change-notice">
+            <i class="ri-walk-line" aria-hidden="true"></i>
+            <span>
+              <strong>{i18n.t('status.roomChangeTitle')}</strong>
+              · {i18n.t('status.roomChangeText').replace('{fromRoom}', schedule.roomChangeNotice.fromRoom).replace('{toRoom}', schedule.roomChangeNotice.toRoom).replace('{fromEnd}', schedule.roomChangeNotice.fromEndTime).replace('{toStart}', schedule.roomChangeNotice.toStartTime).replace('{minutes}', String(schedule.roomChangeNotice.gapMinutes))}
+            </span>
+          </p>
+        {/if}
       </div>
     {/if}
 

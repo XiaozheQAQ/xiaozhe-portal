@@ -2,6 +2,7 @@
   import { useI18n } from '#lib/i18n';
   import { page } from '$app/state';
   import { fly } from 'svelte/transition';
+  import ProgressiveImage from '#lib/components/common/ProgressiveImage.svelte';
 
   let { dark, themeMode, toggleTheme }: { dark: boolean; themeMode: 'system' | 'light' | 'dark'; toggleTheme: () => void } = $props();
   const i18n = useI18n();
@@ -45,7 +46,7 @@
 <header class="site-header">
   <div class="header-inner">
     <a href="/" class="brand" aria-label="Xiaozhe home">
-      <img class="brand-avatar" src="/images/xiaozhe-avatar.jpg" alt="Xiaozhe Nice" />
+      <ProgressiveImage class="brand-avatar" src="/images/xiaozhe-avatar.jpg" alt="Xiaozhe Nice" width={32} height={32} priority spinnerSize={16} />
       <span class="brand-name">Xiaozhe Nice</span>
       <span class="brand-section">{i18n.t('brand.blog')}</span>
     </a>

@@ -1,7 +1,16 @@
 import matter from 'gray-matter';
-import { marked, Renderer } from 'marked';
+import { marked, Renderer, type Tokens } from 'marked';
 import hljs from 'highlight.js/lib/common';
 import { blogSchema, labSchema, projectSchema } from './schema';
+import {
+  buildImageMarkup,
+  escapeHtml,
+  hasUsableSize,
+  matchImageSizeSyntax,
+  parseHtmlImage,
+  parseSizeAttrs,
+  type ImageSize
+} from './image-dimensions';
 
 export type ContentKind = 'blog' | 'projects' | 'lab';
 
@@ -29,6 +38,43 @@ export type ContentItem = {
   wordCount: number;
 };
 
+// Inline extension: `![alt](href){width=.. height=.. ratio=..}` attaches an optional
+// size hint to a normal Markdown image. When the braces are absent or carry no usable
+// size, this tokenizer returns undefined and the built-in image tokenizer takes over.
+type SizedImageToken = Tokens.Image & { piDims?: ImageSize };
+
+const GLOBAL = globalThis as { __xiaozheImageSizeExtensionInstalled?: boolean };
+if (!GLOBAL.__xiaozheImageSizeExtensionInstalled) {
+  GLOBAL.__xiaozheImageSizeExtensionInstalled = true;
+  marked.use({
+    extensions: [
+      {
+        name: 'image-with-size',
+        level: 'inline',
+        start(src: string): number | undefined {
+          const index = src.indexOf('![');
+          return index === -1 ? undefined : index;
+        },
+        tokenizer(src: string): SizedImageToken | undefined {
+          const match = matchImageSizeSyntax(src);
+          if (!match) return undefined;
+          const piDims = parseSizeAttrs(match.attrs);
+          if (!hasUsableSize(piDims)) return undefined;
+          return {
+            type: 'image',
+            raw: match.raw,
+            href: match.href,
+            title: match.title,
+            text: match.alt,
+            tokens: [],
+            piDims
+          };
+        }
+      }
+    ]
+  });
+}
+
 function slugifyHeading(text: string, index: number) {
   const slug = text
     .toLowerCase()
@@ -38,16 +84,6 @@ function slugifyHeading(text: string, index: number) {
     .replace(/\s+/g, '-');
 
   return slug || `section-${index + 1}`;
-}
-
-function escapeHtml(value: string) {
-  return value.replace(/[&<>"']/g, (character) => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-  })[character] ?? character);
 }
 
 function parseCodeMeta(lang = '') {
@@ -96,7 +132,29 @@ function prepareMarkdown(source: string) {
 
   const renderer = new Renderer();
   renderer.code = ({ text, lang }) => renderCode(text, lang ?? '');
-  renderer.html = () => '';
+  renderer.html = ({ text }) => {
+    const image = parseHtmlImage(text);
+    if (!image) return '';
+    return buildImageMarkup({
+      src: image.src,
+      alt: image.alt,
+      title: image.title,
+      width: image.width,
+      height: image.height
+    });
+  };
+  renderer.image = (token) => {
+    const { href, title, text } = token;
+    const size = (token as SizedImageToken).piDims ?? {};
+    return buildImageMarkup({
+      src: href ?? '',
+      alt: text ?? '',
+      title: title ?? undefined,
+      width: size.width,
+      height: size.height,
+      ratio: size.ratio
+    });
+  };
 
   let html = marked.parse(withoutDefinitions, { renderer }) as string;
   html = html.replace(/FOOTNOTE_REF_([A-Za-z0-9_-]+)/g, (_match, id: string) => {

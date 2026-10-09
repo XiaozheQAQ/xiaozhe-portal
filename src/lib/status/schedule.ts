@@ -89,100 +89,128 @@ export const holidayDates: string[] = [
   '2026-10-07'
 ];
 
+// 2026—2027 学年第一学期教学节次（每节 45 分钟，节间休息 10 分钟）。
+// 用户可见的课程起止时间一律以 courses 中的 start/end 为准，segments 仅用于课间状态判定与展示。
+const SEG_MORNING_FIRST: TimeSegment[] = [
+  { start: '08:00', end: '08:45' },
+  { start: '08:55', end: '09:40' }
+];
+const SEG_MORNING_SECOND: TimeSegment[] = [
+  { start: '10:00', end: '10:45' },
+  { start: '10:55', end: '11:40' }
+];
+const SEG_AFTERNOON_FIRST: TimeSegment[] = [
+  { start: '14:30', end: '15:15' },
+  { start: '15:25', end: '16:10' }
+];
+const SEG_AFTERNOON_SECOND: TimeSegment[] = [
+  { start: '16:30', end: '17:15' },
+  { start: '17:25', end: '18:10' }
+];
+const SEG_EVENING: TimeSegment[] = [
+  { start: '19:30', end: '20:15' },
+  { start: '20:25', end: '21:10' }
+];
 export const courses: Course[] = [
-  // 周一
+  // 周一 · 高等数学A1（第5—16周；第5周周一 10-05 为国庆假期，实际从第6周周一 10-12 开始）
   {
     id: 'monday-math-a1',
     name: '高等数学A1',
     weekday: 1,
-    start: '14:00',
-    end: '15:50',
+    start: '14:30',
+    end: '16:10',
     teacher: '吕红杰',
     room: '教三楼204',
-    weeks: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+    weeks: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    segments: SEG_AFTERNOON_FIRST
   },
-  // 周二
+  // 周二 · C语言程序设计（第5—16周；第5周周二 10-06 为国庆假期）
   {
     id: 'tuesday-c-lang',
     name: 'C语言程序设计',
     weekday: 2,
     start: '08:00',
-    end: '09:50',
+    end: '09:40',
     teacher: '常化文',
     room: '教三楼700',
-    weeks: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
-    segments: [
-      { start: '08:00', end: '08:50' },
-      { start: '09:00', end: '09:50' }
-    ]
+    weeks: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    segments: SEG_MORNING_FIRST
   },
+  // 周二 · 大学英语读写译A1（第5—12周）
   {
     id: 'tuesday-english-reading-a1',
     name: '大学英语读写译A1',
     weekday: 2,
-    start: '10:10',
-    end: '12:00',
+    start: '10:00',
+    end: '11:40',
     teacher: '林娜',
     room: '教三楼504',
-    weeks: [6, 7, 8, 9, 10, 11, 12],
-    segments: [
-      { start: '10:10', end: '11:00' },
-      { start: '11:10', end: '12:00' }
-    ]
+    weeks: [5, 6, 7, 8, 9, 10, 11, 12],
+    segments: SEG_MORNING_SECOND
   },
+  // 周二 · 高等数学A1（第5—16周）
   {
     id: 'tuesday-math-a1',
     name: '高等数学A1',
     weekday: 2,
-    start: '14:00',
-    end: '15:50',
+    start: '14:30',
+    end: '16:10',
     teacher: '吕红杰',
     room: '教三楼200',
-    weeks: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+    weeks: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    segments: SEG_AFTERNOON_FIRST
   },
+  // 周二 · 大学生职业生涯规划（第5—12周；与上一节高等数学间隔仅 20 分钟）
   {
     id: 'tuesday-career-planning',
     name: '大学生职业生涯规划',
     weekday: 2,
-    start: '16:10',
-    end: '18:00',
+    start: '16:30',
+    end: '18:10',
     teacher: '欧阳杜娟',
     room: '教三楼401',
-    weeks: [6, 7, 8, 9, 10, 11, 12]
+    weeks: [5, 6, 7, 8, 9, 10, 11, 12],
+    segments: SEG_AFTERNOON_SECOND
   },
-  // 周三
+  // 周三 · 电路分析基础C（第5—17周；第5周周三 10-07 为国庆假期）
   {
     id: 'wednesday-circuit-analysis-c',
     name: '电路分析基础C',
     weekday: 3,
-    start: '10:10',
-    end: '12:00',
+    start: '10:00',
+    end: '11:40',
     teacher: '陈冬冬',
     room: '教三楼509',
-    weeks: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+    weeks: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+    segments: SEG_MORNING_SECOND
   },
-  // 周四
+  // 周四 · 高等数学A1（第5—16周；首次实际授课 2026-10-08）
   {
     id: 'thursday-math-a1',
     name: '高等数学A1',
     weekday: 4,
     start: '08:00',
-    end: '09:50',
+    end: '09:40',
     teacher: '吕红杰',
     room: '教三楼200',
-    weeks: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+    weeks: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    segments: SEG_MORNING_FIRST
   },
+  // 周四 · 形势与政策1（第5—8周；对应 10-08/10-15/10-22/10-29 四次）
   {
     id: 'thursday-situation-policy-1',
     name: '形势与政策1',
     weekday: 4,
-    start: '10:10',
-    end: '12:00',
+    start: '10:00',
+    end: '11:40',
     teacher: '徐菲',
     room: '教三楼204',
     weeks: [5, 6, 7, 8],
-    dates: ['2026-10-08', '2026-10-15', '2026-10-22', '2026-10-29']
+    dates: ['2026-10-08', '2026-10-15', '2026-10-22', '2026-10-29'],
+    segments: SEG_MORNING_SECOND
   },
+  // 周四 · 国家安全教育（线下）：独立的单次安排，仅 2026-10-29 一次，14:00—18:00
+  // 不按周重复，也不拆分节次（官方未提供该时段的节次结构）。
   {
     id: 'thursday-national-security-offline',
     name: '国家安全教育（线下）',
@@ -192,30 +220,26 @@ export const courses: Course[] = [
     teacher: '国家安全教育团队',
     room: '教三楼102',
     weeks: [8],
-    dates: ['2026-10-29'],
-    segments: [
-      { start: '14:00', end: '14:50' },
-      { start: '15:00', end: '15:50' },
-      { start: '16:10', end: '17:00' },
-      { start: '17:10', end: '18:00' }
-    ]
+    dates: ['2026-10-29']
   },
-  // 周五
+  // 周五 · 大学体育1（第5—17周；地点课表未提供，不得自行填写）
   {
     id: 'friday-pe-1',
     name: '大学体育1',
     weekday: 5,
     start: '08:00',
-    end: '09:50',
+    end: '09:40',
     teacher: '贺伟',
-    weeks: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+    weeks: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+    segments: SEG_MORNING_FIRST
   },
+  // 周五 · 大学英语视听说A1：以 8 个确切日期为准（第8—15周，教师病假自第8周开始）
   {
     id: 'friday-english-listening-a1',
     name: '大学英语视听说A1',
     weekday: 5,
-    start: '10:10',
-    end: '12:00',
+    start: '10:00',
+    end: '11:40',
     teacher: '郭超',
     room: '教一楼103',
     weeks: [8, 9, 10, 11, 12, 13, 14, 15],
@@ -229,36 +253,33 @@ export const courses: Course[] = [
       '2026-12-11',
       '2026-12-18'
     ],
-    segments: [
-      { start: '10:10', end: '11:00' },
-      { start: '11:10', end: '12:00' }
-    ]
+    segments: SEG_MORNING_SECOND
   },
+  // 周五 · 计算机科学导论（第5—14周，第14周后停止）
   {
     id: 'friday-cs-intro',
     name: '计算机科学导论',
     weekday: 5,
-    start: '14:00',
-    end: '15:50',
+    start: '14:30',
+    end: '16:10',
     teacher: '刘炎培',
     room: '教三楼608',
-    weeks: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    weeks: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+    segments: SEG_AFTERNOON_FIRST
   },
+  // 周五 · C语言程序设计（第5—16周）
   {
     id: 'friday-c-lang',
     name: 'C语言程序设计',
     weekday: 5,
-    start: '16:10',
-    end: '18:00',
+    start: '16:30',
+    end: '18:10',
     teacher: '常化文',
     room: '教三楼700',
     weeks: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
-    segments: [
-      { start: '16:10', end: '17:00' },
-      { start: '17:10', end: '18:00' }
-    ]
+    segments: SEG_AFTERNOON_SECOND
   },
-  // 周六
+  // 周六 · 国家安全教育（线上/平台安排，第5—17周）——与周四 10-29 线下安排相互独立
   {
     id: 'saturday-national-security-online',
     name: '国家安全教育（线上）',
@@ -266,8 +287,10 @@ export const courses: Course[] = [
     start: '19:30',
     end: '21:10',
     teacher: '尔雅',
+    room: '教三楼102',
     isOnline: true,
-    weeks: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+    weeks: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+    segments: SEG_EVENING
   }
 ];
 
@@ -307,6 +330,112 @@ export const practiceEvents: PracticeEvent[] = [
   }
 ];
 
+export type RoomAccess = 'elevator' | 'stairs' | 'ground';
+
+export type RoomGuide = {
+  room: string;
+  /** 电梯可达性：elevator 可达 / stairs 不可达（走楼梯）/ ground 无需上楼 */
+  access: RoomAccess;
+  /** 方位：left 左侧 / right 右侧 */
+  side?: 'left' | 'right';
+  /** 从楼栋正门出发的完整步行路线 */
+  route: string;
+  /** 关联课程等补充说明 */
+  note?: string;
+};
+
+// 教室路线统一按“教室”维度维护，避免同一教室在不同课程里出现互相冲突的描述。
+export const roomGuides: Record<string, RoomGuide> = {
+  '教三楼204': {
+    room: '教三楼204',
+    access: 'stairs',
+    side: 'left',
+    route: '从教三楼正门进入后左转，上楼梯到二楼，进门左转直走。',
+    note: '高等数学A1（周一）、形势与政策1'
+  },
+  '教三楼200': {
+    room: '教三楼200',
+    access: 'stairs',
+    side: 'left',
+    route: '从教三楼正门进入后左转，上楼梯到二楼，进门左转直走，到头再左转。',
+    note: '高等数学A1（周二、周四）'
+  },
+  '教三楼700': {
+    room: '教三楼700',
+    access: 'elevator',
+    side: 'left',
+    route: '从教三楼正门进入后左转，乘坐电梯到七楼，再左转到最里面的教室。',
+    note: 'C语言程序设计（周二、周五）'
+  },
+  '教三楼504': {
+    room: '教三楼504',
+    access: 'elevator',
+    side: 'left',
+    route: '从教三楼正门进入后左转，乘坐电梯到五楼，再左转。',
+    note: '大学英语读写译A1'
+  },
+  '教三楼509': {
+    room: '教三楼509',
+    access: 'elevator',
+    side: 'right',
+    route: '从教三楼正门进入后右转，乘坐电梯到五楼，再右转即到。',
+    note: '电路分析基础C'
+  },
+  '教三楼401': {
+    room: '教三楼401',
+    access: 'stairs',
+    side: 'right',
+    route: '从教三楼正门进入后右转，步行至四楼，右转经过403、405，即到401。',
+    note: '大学生职业生涯规划'
+  },
+  '教三楼608': {
+    room: '教三楼608',
+    access: 'elevator',
+    side: 'left',
+    route: '从教三楼正门进入后左转，乘坐电梯到六楼，再左转即到。',
+    note: '计算机科学导论'
+  },
+  '教一楼103': {
+    room: '教一楼103',
+    access: 'ground',
+    route: '从教一楼正门进入，从楼梯右侧进入，不上楼，右拐直行，上一小段台阶后，右手侧正对即为103。',
+    note: '大学英语视听说A1；教一楼在食堂正大门斜对面，右侧大门位于拐角处'
+  },
+  '教三楼102': {
+    room: '教三楼102',
+    access: 'ground',
+    route: '从教三楼正门进入后左转，直走到头即到。',
+    note: '国家安全教育（周六线上/平台安排与 10-29 周四单次线下安排）'
+  }
+};
+
+export function getRoomGuide(room?: string): RoomGuide | undefined {
+  if (!room) return undefined;
+  return roomGuides[room];
+}
+
+export type RoomChangeNotice = {
+  id: string;
+  weekday: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  fromRoom: string;
+  toRoom: string;
+  fromEndTime: string;
+  toStartTime: string;
+  gapMinutes: number;
+};
+
+// 换教室提醒：仅记录确有冲突风险的相邻课程。
+export const roomChangeNotices: RoomChangeNotice[] = [
+  {
+    id: 'tuesday-math-to-career-planning',
+    weekday: 2,
+    fromRoom: '教三楼200',
+    toRoom: '教三楼401',
+    fromEndTime: '16:10',
+    toStartTime: '16:30',
+    gapMinutes: 20
+  }
+];
 export function parseMinutes(value: string): number {
   const [hours, minutes] = value.split(':').map(Number);
   return hours * 60 + minutes;
@@ -430,6 +559,16 @@ export function getScheduleDetails(date: Date) {
     ? practiceEvents.filter((event) => week >= event.startWeek && week <= event.endWeek)
     : [];
 
+  // 今日各节课对应的教室路线（按课程顺序去重，集中实践不产生教室路线）。
+  const todayRoomGuides = todaysCourses
+    .map((course) => getRoomGuide(course.room))
+    .filter((guide): guide is RoomGuide => Boolean(guide))
+    .filter((guide, index, list) => list.findIndex((item) => item.room === guide.room) === index);
+
+  const roomChangeNotice = todaysCourses.length > 0
+    ? roomChangeNotices.find((notice) => notice.weekday === weekday)
+    : undefined;
+
   return {
     week,
     weekday,
@@ -440,7 +579,11 @@ export function getScheduleDetails(date: Date) {
     currentCourse,
     breakCourse,
     nextCourse,
-    activePractices
+    activePractices,
+    todayRoomGuides,
+    roomChangeNotice,
+    /** 距离下一节课开始的分钟数；无后续课程时为 null */
+    minutesUntilNext: nextCourse ? parseMinutes(nextCourse.start) - minutes : null
   };
 }
 

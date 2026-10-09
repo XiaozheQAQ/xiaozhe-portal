@@ -10,7 +10,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "test:schedule": "node --test --experimental-strip-types tests/schedule.test.js"
+    "test:schedule": "node --test --experimental-strip-types tests/schedule.test.js",
+    "test:images": "node --test --experimental-strip-types tests/image-dimensions.test.js"
   },
   "devDependencies": {
     "@sveltejs/adapter-vercel": "^7.0.0",

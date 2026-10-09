@@ -6,6 +6,7 @@
   import Header from '#lib/components/layout/Header.svelte';
   import Footer from '#lib/components/layout/Footer.svelte';
   import NavigationProgress from '#lib/components/common/NavigationProgress.svelte';
+  import ImageViewer from '#lib/components/common/ImageViewer.svelte';
 
   let { children } = $props();
   const i18n = createI18n();
@@ -31,7 +32,16 @@
     document.documentElement.classList.remove('theme-initializing');
     const handleSystemChange = () => { if (themeMode === 'system') applyTheme('system'); };
     mediaQuery.addEventListener('change', handleSystemChange);
-    return () => mediaQuery?.removeEventListener('change', handleSystemChange);
+    // Images and links are not draggable: one delegated guard covers static and rendered markup.
+    const handleDragStart = (event: DragEvent) => {
+      const target = event.target;
+      if (target instanceof Element && (target.closest('img') || target.closest('a'))) event.preventDefault();
+    };
+    document.addEventListener('dragstart', handleDragStart);
+    return () => {
+      mediaQuery?.removeEventListener('change', handleSystemChange);
+      document.removeEventListener('dragstart', handleDragStart);
+    };
   });
 
   function toggleTheme() {
@@ -65,3 +75,5 @@
   <Footer />
   <NavigationProgress />
 {/key}
+
+<ImageViewer />
