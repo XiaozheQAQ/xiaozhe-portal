@@ -1,2 +1,5 @@
-import { getProjects } from '#lib/content/projects';
-export function load() { return { projects: getProjects() }; }
+import { redirect } from '@sveltejs/kit';
+
+export function load() {
+  throw redirect(308, '/lab#done');
+}

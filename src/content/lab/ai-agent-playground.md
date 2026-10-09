@@ -1,7 +1,7 @@
 ---
 title: "AI Agent Playground"
 description: "测试多 Agent 协作、工具调用和任务编排。"
-status: experimental
+status: researching
 date: "2026-10-06"
 tags:
   - Agents

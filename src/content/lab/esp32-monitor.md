@@ -1,7 +1,7 @@
 ---
 title: "ESP32 Network Monitor"
 description: "计划用 ESP32 做一个小型网络状态监控器。"
-status: experimental
+status: researching
 date: "2026-10-07"
 tags:
   - ESP32

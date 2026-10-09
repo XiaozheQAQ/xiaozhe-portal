@@ -1,7 +1,6 @@
 import type { RequestHandler } from './$types';
 import { getPosts } from '#lib/content/blog';
-import { getLabs } from '#lib/content/lab';
-import { getProjects } from '#lib/content/projects';
+import { getLabEntries } from '#lib/content/lab';
 
 export const prerender = true;
 
@@ -9,12 +8,11 @@ export const GET: RequestHandler = ({ url }) => {
   const paths = [
     '/',
     '/blog',
-    '/projects',
     '/lab',
+    '/status',
     '/about',
     ...getPosts().map((item) => `/blog/${item.slug}`),
-    ...getProjects().map((item) => `/projects/${item.slug}`),
-    ...getLabs().map((item) => `/lab/${item.slug}`)
+    ...getLabEntries().map((item) => `/lab/${item.slug}`)
   ];
   const body = paths.map((path) => `  <url><loc>${url.origin}${path}</loc></url>`).join('\n');
   return new Response(

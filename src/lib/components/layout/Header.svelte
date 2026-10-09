@@ -9,11 +9,11 @@
   let languageOpen = $state(false);
   const locale = i18n.locale;
   const links = [
-    { href: '/', key: 'nav.home' },
-    { href: '/blog', key: 'nav.blog' },
-    { href: '/projects', key: 'nav.projects' },
-    { href: '/lab', key: 'nav.lab' },
-    { href: '/about', key: 'nav.about' }
+    { href: '/', key: 'nav.home', icon: 'ri-home-4-line' },
+    { href: '/blog', key: 'nav.blog', icon: 'ri-article-line' },
+    { href: '/lab', key: 'nav.lab', icon: 'ri-flask-line' },
+    { href: '/status', key: 'nav.status', icon: 'ri-pulse-line' },
+    { href: '/about', key: 'nav.about', icon: 'ri-user-3-line' }
   ];
   const themeLabels = {
     system: 'theme.system',
@@ -51,14 +51,18 @@
     </a>
     <nav class="desktop-nav" aria-label="Primary navigation">
       {#each links as link}
-        <a class:active={link.href !== '/' ? page.url.pathname.startsWith(link.href) : page.url.pathname === '/'} href={link.href}>{i18n.t(link.key)}</a>
+        <a class:active={link.href !== '/' ? page.url.pathname.startsWith(link.href) : page.url.pathname === '/'} href={link.href}>
+          <i class={link.icon} aria-hidden="true"></i>{i18n.t(link.key)}
+        </a>
       {/each}
     </nav>
     <div class="header-actions">
       <button class="icon-button theme-button" onclick={toggleTheme} aria-label={i18n.t(themeLabels[themeMode])} title={i18n.t(themeLabels[themeMode])}>
         <i class={`theme-icon ${themeMode === 'system' ? 'ri-computer-line' : themeMode === 'light' ? 'ri-sun-line' : 'ri-moon-line'}`} aria-hidden="true"></i>
       </button>
-      <button class="menu-button compact-button" onclick={() => (menuOpen = !menuOpen)} aria-expanded={menuOpen} aria-label={i18n.t('nav.menu')}>{i18n.t('nav.menu')}</button>
+      <button class="menu-button icon-button" onclick={() => (menuOpen = !menuOpen)} aria-expanded={menuOpen} aria-label={i18n.t(menuOpen ? 'nav.closeMenu' : 'nav.menu')}>
+        <i class={menuOpen ? 'ri-close-line' : 'ri-menu-line'} aria-hidden="true"></i>
+      </button>
       <div class="language-control">
         <button class="language-trigger compact-button" onclick={() => (languageOpen = !languageOpen)} aria-expanded={languageOpen} aria-haspopup="menu">
           {$locale === 'zh-CN' ? '中文' : 'English'} <i class:open={languageOpen} class="ri-arrow-down-s-line" aria-hidden="true"></i>
@@ -75,7 +79,7 @@
   {#if menuOpen}
     <nav class="mobile-nav" aria-label="Mobile navigation">
       {#each links as link}
-        <a href={link.href} onclick={() => (menuOpen = false)}>{i18n.t(link.key)}<span>↗</span></a>
+        <a href={link.href} onclick={() => (menuOpen = false)}><span><i class={link.icon} aria-hidden="true"></i>{i18n.t(link.key)}</span><span>↗</span></a>
       {/each}
       <a href="/search" onclick={() => (menuOpen = false)}>{i18n.t('nav.search')}<i class="ri-search-line" aria-hidden="true"></i></a>
       <a href="https://github.com/XiaozheQAQ" target="_blank" rel="noreferrer" onclick={() => (menuOpen = false)}>GitHub <i class="ri-github-line" aria-hidden="true"></i></a>

@@ -1,8 +1,8 @@
 ---
 title: "Teleport"
 description: "面向远程访问、网络与基础设施实验的个人项目。"
-status: experimental
-tech:
+status: researching
+tags:
   - Networking
   - Linux
   - Web

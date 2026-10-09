@@ -7,10 +7,8 @@
   const locale = i18n.locale;
 
   const state = {
-    active: ['●', 'status.active'],
-    experimental: ['◐', 'status.experimental'],
-    done: ['✓', 'status.done'],
-    archived: ['×', 'status.archived']
+    researching: ['◐', 'lab.researching'],
+    done: ['✓', 'lab.done']
   } as Record<string, [string, string]>;
 </script>
 

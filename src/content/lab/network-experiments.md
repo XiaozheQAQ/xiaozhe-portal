@@ -1,7 +1,7 @@
 ---
 title: "Network Experiments"
 description: "围绕网络、服务器基础设施与 Edge 计算做一些小实验。"
-status: experimental
+status: researching
 date: "2026-10-02"
 tags:
   - Network

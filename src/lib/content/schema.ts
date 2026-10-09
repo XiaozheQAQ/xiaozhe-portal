@@ -28,8 +28,8 @@ export const projectSchema = z.object({
 export const labSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
-  status: z.enum(['active', 'experimental', 'done', 'archived']).default('experimental'),
-  date: z.coerce.string(),
+  status: z.enum(['researching', 'done']).default('researching'),
+  date: z.coerce.string().default(''),
   tags: z.array(z.string()).default([]),
   featured: z.boolean().default(false),
   slug: z.string().optional()

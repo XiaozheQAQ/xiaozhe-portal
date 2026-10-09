@@ -1,2 +1,2 @@
-import { getLabs } from '#lib/content/lab';
-export function load() { return { labs: getLabs() }; }
+import { getLabEntries } from '#lib/content/lab';
+export function load() { return { labs: getLabEntries() }; }

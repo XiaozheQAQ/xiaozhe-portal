@@ -1,8 +1,10 @@
-import { error } from '@sveltejs/kit';
-import { getProject } from '#lib/content/projects';
+import { redirect } from '@sveltejs/kit';
+import { getCollection } from '#lib/content/loader';
+
+export function entries() {
+  return getCollection('projects').map((project) => ({ slug: project.slug }));
+}
 
 export function load({ params }) {
-  const project = getProject(params.slug);
-  if (!project) throw error(404, 'Project not found');
-  return { project };
+  throw redirect(308, `/lab/${params.slug}`);
 }

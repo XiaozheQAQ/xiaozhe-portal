@@ -1,7 +1,6 @@
 <script lang="ts">
   import SectionHeader from '#lib/components/common/SectionHeader.svelte';
   import PostItem from '#lib/features/blog/PostItem.svelte';
-  import ProjectItem from '#lib/features/projects/ProjectItem.svelte';
   import LabItem from '#lib/features/lab/LabItem.svelte';
   import { useI18n } from '#lib/i18n';
   import SearchBox from '#lib/components/common/SearchBox.svelte';
@@ -26,7 +25,7 @@
       {#each ['Web', 'AI', 'Systems', 'Minecraft'] as tag}<a class="tag" href="/search">{tag}</a>{/each}
     </div>
     <div class="hero-actions">
-      <a class="button-primary" href="/projects">{i18n.t('hero.ctaProjects')} <i class="ri-arrow-right-up-line" aria-hidden="true"></i></a>
+      <a class="button-primary" href="/lab">{i18n.t('hero.ctaLab')} <i class="ri-arrow-right-up-line" aria-hidden="true"></i></a>
       <a class="button-secondary" href="/blog">{i18n.t('hero.ctaWriting')} <i class="ri-arrow-right-line" aria-hidden="true"></i></a>
     </div>
   </div>
@@ -46,19 +45,14 @@
 <SearchBox className="home-search" />
 
 <nav class="quick-grid" aria-label={i18n.t('home.quick')}>
-  <a class="quick-link" href="/blog">{i18n.t('home.quickWriting')} <span>↗</span></a>
-  <a class="quick-link" href="/projects">{i18n.t('home.quickProjects')} <span>↗</span></a>
-  <a class="quick-link" href="/lab">{i18n.t('home.quickLab')} <span>↗</span></a>
+  <a class="quick-link" href="/blog"><span class="quick-link-label"><i class="ri-article-line" aria-hidden="true"></i>{i18n.t('home.quickWriting')}</span><span>↗</span></a>
+  <a class="quick-link" href="/lab"><span class="quick-link-label"><i class="ri-flask-line" aria-hidden="true"></i>{i18n.t('home.quickLab')}</span><span>↗</span></a>
+  <a class="quick-link" href="/status"><span class="quick-link-label"><i class="ri-pulse-line" aria-hidden="true"></i>{i18n.t('home.quickStatus')}</span><span>↗</span></a>
 </nav>
 
 <section class="content-section">
   <SectionHeader title={i18n.t('section.writing')} href="/blog" action={i18n.t('section.viewAll')} />
-  <div>{#each data.posts as post}<PostItem {post} />{/each}</div>
-</section>
-
-<section class="content-section">
-  <SectionHeader title={i18n.t('section.projects')} href="/projects" action={i18n.t('section.viewAll')} />
-  <div>{#each data.projects as project}<ProjectItem {project} />{/each}</div>
+  <div>{#each data.posts as post, index}<PostItem {post} index={index} />{/each}</div>
 </section>
 
 <section class="content-section">

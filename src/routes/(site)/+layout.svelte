@@ -42,13 +42,13 @@
 </script>
 
 <svelte:head>
-  <meta name="description" content="Xiaozhe's personal web portal — writing, projects and experiments." />
+  <meta name="description" content="Xiaozhe's personal web portal — writing, experiments and a live status snapshot." />
   <meta name="theme-color" content={dark ? '#0d1016' : '#fafbfc'} />
   <link rel="icon" type="image/jpeg" href="/images/xiaozhe-avatar.jpg" />
   <link rel="apple-touch-icon" href="/images/xiaozhe-avatar.jpg" />
   <link rel="canonical" href={`https://xiaozhe.dev${page.url.pathname}`} />
   <meta property="og:title" content="Xiaozhe — Web / AI / Systems" />
-  <meta property="og:description" content="Writing, projects and experiments from Xiaozhe." />
+  <meta property="og:description" content="Writing, experiments and a live status snapshot from Xiaozhe." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content={`https://xiaozhe.dev${page.url.pathname}`} />
 </svelte:head>
