@@ -452,7 +452,9 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
 }
 .section-header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
 .section-header h2 { margin: 0; font-size: 1.4rem; letter-spacing: -.035em; }
-.section-header-icon { margin-right: 9px; color: var(--accent); font-size: 1.12rem; vertical-align: -.1em; }
+/* Sized by the heading it belongs to and sitting on its baseline, so the icon
+   and the title read as one line instead of a small icon next to bigger text. */
+.section-header-icon { margin-right: 9px; color: var(--accent); font-size: inherit; line-height: 1; vertical-align: 0; }
 .section-header a { color: var(--muted); font-size: .82rem; transition: color .18s, transform .18s; }
 .section-header a:hover { color: var(--accent); transform: translateX(3px); }
 .now-line { margin: 20px 0 0; padding: 13px 0; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .83rem; }
