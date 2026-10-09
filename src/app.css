@@ -62,7 +62,12 @@ button:focus-visible, a:focus-visible, input:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
-.page-enter { animation: page-enter 280ms ease-out both; }
+/* `backwards`, not `both`: a finished forwards-filling animation keeps the
+   element's transform applied forever, and a transformed element becomes the
+   containing block for `position: fixed` descendants 鈥?which would pin overlays
+   (scroll-to-top button, image viewer) to .site-main instead of the viewport.
+   The final keyframe equals the element's own style, so nothing changes visually. */
+.page-enter { animation: page-enter 280ms ease-out backwards; }
 @keyframes page-enter {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -403,6 +408,13 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(300px, .6fr); gap: 32px; align-items: stretch; }
 .hero-copy { padding: 28px 0 24px; }
 .eyebrow { color: var(--accent); font-family: var(--font-mono); font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+/*
+ * The kicker line above a page title (list page eyebrow / detail page date) is
+ * pinned to one line box, so the title below starts at exactly the same height
+ * on index and detail pages even though the two kickers use different type
+ * sizes (11.2px vs 12px).
+ */
+.page-kicker { line-height: 17px; }
 .hero-title { max-width: 650px; margin: 14px 0 16px; font-size: clamp(2.8rem, 5.8vw, 5.2rem); line-height: 1.02; letter-spacing: -.06em; font-weight: 700; animation: hero-title-float 8s ease-in-out infinite; will-change: transform; }
 .hero-title-zh { max-width: 680px; font-size: clamp(2.65rem, 5.2vw, 4.8rem); letter-spacing: -.08em; }
 .hero-subtitle { max-width: 610px; color: var(--muted); font-size: clamp(1.08rem, 2vw, 1.35rem); line-height: 1.65; }
@@ -421,7 +433,7 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
 .status-panel dl { display: grid; gap: 16px; margin: 20px 0 0; }
 .status-panel dt { color: var(--muted); font-size: .75rem; }
 .status-panel dd { margin: 3px 0 0; font-size: .94rem; font-weight: 650; }
-.quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: 12px; }
+.quick-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: 12px; }
 .quick-link { display: flex; justify-content: space-between; gap: 12px; padding: 15px 12px; color: var(--muted); font-size: .84rem; transition: color .18s, background .18s, padding .18s; }
 .quick-link-label { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
 .quick-link-label i { color: currentColor; font-size: 1rem; line-height: 1; }
@@ -440,6 +452,7 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
 }
 .section-header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
 .section-header h2 { margin: 0; font-size: 1.4rem; letter-spacing: -.035em; }
+.section-header-icon { margin-right: 9px; color: var(--accent); font-size: 1.12rem; vertical-align: -.1em; }
 .section-header a { color: var(--muted); font-size: .82rem; transition: color .18s, transform .18s; }
 .section-header a:hover { color: var(--accent); transform: translateX(3px); }
 .now-line { margin: 20px 0 0; padding: 13px 0; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .83rem; }
@@ -456,7 +469,9 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
 .article-search { max-width: 560px; margin-bottom: 34px; }
 .article-layout { display: grid; grid-template-columns: minmax(0, 760px) 190px; gap: 56px; align-items: start; }
 .article-outline { position: sticky; top: 100px; border-left: 1px solid var(--line); padding-left: 16px; }
-.article-outline-title { margin: 0 0 10px; color: var(--muted); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; }
+.article-outline-title { margin: 0 0 10px; color: var(--muted); font-family: var(--font-mono); font-size: .66rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+/* Same inline-icon treatment as .section-header-icon, scaled to this label. */
+.article-outline-icon { margin-right: 6px; color: var(--accent); font-size: .9rem; vertical-align: -.1em; }
 .article-outline a { display: block; padding: 4px 0; color: var(--muted); font-size: .76rem; line-height: 1.45; transition: color .18s, transform .18s; }
 .article-outline a:hover, .article-outline a.active { color: var(--accent); transform: translateX(3px); }
 .article-outline a[data-depth="3"] { padding-left: 10px; font-size: .72rem; }
@@ -564,7 +579,7 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
 .lab-prose h3 { font-size: 1.05rem; margin: 1.6rem 0 .55rem; }
 .lab-prose p, .lab-prose ul, .lab-prose ol { color: color-mix(in srgb, var(--text) 84%, transparent); line-height: 1.85; }
 
-/* ── About Bento Grid & Profile Archive ────────────────────────── */
+/* 鈹€鈹€ About Bento Grid & Profile Archive 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€ */
 .about-page { padding-bottom: 48px; }
 .about-header { padding: 28px 0 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
 .about-header-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
@@ -624,7 +639,7 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
   font-size: .85rem;
 }
 
-/* ① Main card — spans 8 cols */
+/* 鈶?Main card 鈥?spans 8 cols */
 .about-card-main { grid-column: span 8; }
 .about-main-body { display: flex; align-items: flex-start; gap: 24px; margin-top: 4px; }
 .about-main-avatar {
@@ -660,7 +675,7 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
 .about-inline-link .link-arrow { font-size: .7rem; transition: transform .18s; }
 .about-inline-link:hover .link-arrow { transform: translate(1px, -1px); }
 
-/* ② Age card — spans 2 cols */
+/* 鈶?Age card 鈥?spans 2 cols */
 .about-card-age {
   grid-column: span 2;
   display: flex;
@@ -674,7 +689,7 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
 .about-stat-unit { font-size: .95rem; font-weight: 600; color: var(--muted); }
 .about-card-footer-note { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .1em; color: var(--muted); margin-top: 8px; }
 
-/* ③ Gender card — spans 2 cols */
+/* 鈶?Gender card 鈥?spans 2 cols */
 .about-card-gender {
   grid-column: span 2;
   display: flex;
@@ -693,7 +708,7 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
   background: color-mix(in srgb, var(--line) 30%, transparent);
 }
 
-/* ④ ⑤ School & Major cards — each spans 6 cols */
+/* 鈶?鈶?School & Major cards 鈥?each spans 6 cols */
 .about-card-school, .about-card-major {
   grid-column: span 6;
   display: flex;
@@ -713,7 +728,7 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
 .about-academic-title { margin: 0 0 4px; font-size: 1.15rem; font-weight: 700; letter-spacing: -.02em; color: var(--text); }
 .about-academic-faculty { margin: 0; color: var(--muted); font-size: .84rem; }
 
-/* ⑥ Tech stack — spans 5 cols */
+/* 鈶?Tech stack 鈥?spans 5 cols */
 .about-card-stack { grid-column: span 5; }
 .about-stack-groups { display: grid; gap: 14px; margin-top: 6px; }
 .about-stack-group { display: flex; flex-direction: column; gap: 6px; }
@@ -740,7 +755,7 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
 .about-stack-footer { margin-top: 16px; padding-top: 10px; border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent); }
 .about-footnote-text { font-size: .7rem; color: var(--muted); }
 
-/* ⑦ Interests — spans 7 cols */
+/* 鈶?Interests 鈥?spans 7 cols */
 .about-card-interests { grid-column: span 7; }
 .about-interests-body { display: grid; grid-template-columns: 1.2fr .8fr; gap: 20px; margin-top: 6px; }
 .about-interests-subgroup { display: flex; flex-direction: column; gap: 8px; }
@@ -750,7 +765,7 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
 .about-interest-icon { font-size: .95rem; color: var(--accent); flex: 0 0 auto; }
 .about-interest-text { line-height: 1.4; }
 
-/* ⑧ Exploring — spans 12 cols */
+/* 鈶?Exploring 鈥?spans 12 cols */
 .about-card-exploring { grid-column: span 12; }
 .about-exploring-sub { margin-left: 10px; font-size: .76rem; color: var(--muted); }
 .about-lab-action {
@@ -789,7 +804,7 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
 .about-exploring-item-title h4 { margin: 0; font-size: .94rem; font-weight: 650; }
 .about-exploring-desc { margin: 0; font-size: .78rem; color: var(--muted); line-height: 1.55; }
 
-/* ⑨ GitHub Banner — spans 12 cols */
+/* 鈶?GitHub Banner 鈥?spans 12 cols */
 .about-card-github {
   grid-column: span 12;
   display: flex;
@@ -857,7 +872,7 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
   .hero-title { max-width: 100%; font-size: clamp(2.45rem, 11vw, 4.2rem); animation-name: hero-title-float-mobile; }
   .hero-title-zh { max-width: 100%; font-size: clamp(2.05rem, 10vw, 3.7rem); }
   .status-panel { padding: 18px; }
-  .quick-grid { grid-template-columns: 1fr; }
+  .quick-grid { grid-template-columns: repeat(2, 1fr); }
   .quick-link { border-bottom: 1px solid var(--line); }
   .quick-link:last-child { border-bottom: 0; }
   .language-control { display: none; }
@@ -892,4 +907,89 @@ html.dark .content-language-badge { border-color: #c88b27; background: color-mix
   .about-card-github { grid-column: span 2; flex-direction: column; align-items: flex-start; gap: 14px; }
   .about-github-action { width: 100%; }
   .about-github-btn { width: 100%; justify-content: center; }
+}
+
+/* 鈹€鈹€ Article engagement, comments, friend links, back-to-top 鈹€鈹€鈹€鈹€鈹€ */
+.article-meta-line { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-top: 16px; font-family: var(--font-mono); font-size: .72rem; color: var(--muted); }
+.article-reading { color: var(--muted); }
+.article-engagement { display: inline-flex; align-items: center; gap: 14px; min-height: 24px; }
+.engagement-item { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-family: var(--font-mono); font-size: .72rem; }
+.engagement-item i { font-size: .95rem; line-height: 1; }
+.engagement-value { font-variant-numeric: tabular-nums; }
+/* The comments section is a jump target for the outline action row. */
+#comments { scroll-margin-top: 7rem; }
+/* Jump-to-comments plus the like read-out, under the outline and -- when the
+   outline is hidden (below 761px) or absent -- inline in the article. Liking
+   itself happens inside giscus: a like is a GitHub reaction, so this row only
+   links there and mirrors the counts giscus reports. */
+.article-actions { margin-top: 20px; }
+.article-action-row { display: flex; flex-wrap: wrap; gap: 10px; }
+/* Icon-only, so the control keeps a square floor when a count is unknown and
+   grows sideways once giscus has reported one.
+   The .article-actions prefix is load-bearing: inside the outline column the
+   plain ".article-outline a" rule (padding/display/font) is more specific than a
+   bare class and would otherwise flatten these buttons. */
+.article-actions .article-action { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-width: 50px; min-height: 46px; border: 1px solid var(--line); border-radius: 14px; padding: 0 15px; background: color-mix(in srgb, var(--surface) 72%, var(--bg)); color: var(--muted); font-family: var(--font-mono); font-size: .76rem; line-height: 1; text-decoration: none; transition: border-color .18s, background .18s, color .18s, transform .18s; }
+.article-actions .article-action i { font-size: 1.1rem; line-height: 1; }
+.article-actions .article-action:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); background: var(--accent-soft); color: var(--accent); transform: translateY(0); }
+.article-actions .article-action:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.article-actions .article-action-count { color: var(--accent); font-size: .74rem; font-variant-numeric: tabular-nums; }
+.article-actions-inline { margin-top: 18px; }
+@media (min-width: 761px) {
+  /* Above this width the outline carries the same row, so the inline copy goes. */
+  .article-actions-inline.has-outline { display: none; }
+}
+
+.scroll-top { position: fixed; right: 22px; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); z-index: 60; display: grid; width: 46px; height: 46px; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--muted); box-shadow: 0 10px 26px color-mix(in srgb, var(--text) 16%, transparent); cursor: pointer; opacity: 0; visibility: hidden; transform: translateY(12px) scale(.86); transition: opacity .22s ease, transform .22s ease, visibility .22s, border-color .18s, color .18s, background .18s; }
+.scroll-top.is-visible { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+.scroll-top i { font-size: 1.18rem; line-height: 1; }
+.scroll-top:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px) scale(1); }
+.scroll-top:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.scroll-top:active { transform: translateY(0) scale(.94); }
+
+.article-comments { margin-top: 62px; border-top: 1px solid var(--line); padding-top: 26px; }
+.comments-heading h2 { display: inline-flex; align-items: center; gap: 8px; margin: 0; font-size: 1.15rem; font-weight: 650; letter-spacing: -.02em; }
+.comments-heading h2 i { color: var(--accent); font-size: 1.12rem; }
+.comments-heading p { margin: 7px 0 0; color: var(--muted); font-size: .82rem; line-height: 1.6; }
+.comments-mount { margin-top: 18px; }
+.comments-mount .giscus { color-scheme: normal; }
+.comments-status { margin: 14px 0 0; color: var(--muted); font-family: var(--font-mono); font-size: .74rem; }
+.comments-pending { display: flex; gap: 13px; margin-top: 18px; border: 1px dashed var(--line); border-radius: 14px; padding: 16px 18px; background: color-mix(in srgb, var(--surface) 70%, transparent); }
+.comments-pending > i { margin-top: 2px; color: var(--muted); font-size: 1.3rem; line-height: 1; }
+.comments-pending-title { margin: 0; font-size: .88rem; font-weight: 650; }
+.comments-pending-hint { margin: 5px 0 0; color: var(--muted); font-size: .78rem; line-height: 1.6; }
+.comments-pending-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; color: var(--accent); font-size: .78rem; }
+.comments-pending-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.comments-error { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; color: var(--muted); font-size: .8rem; }
+.comments-error p { margin: 0; }
+.comments-retry { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; border: 1px solid var(--line); border-radius: 999px; padding: 0 12px; background: var(--surface); color: var(--muted); font-size: .76rem; cursor: pointer; transition: border-color .18s, color .18s; }
+.comments-retry:hover { border-color: var(--accent); color: var(--accent); }
+.comments-retry:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.friends-description { margin: 0 0 14px; color: var(--muted); font-size: .84rem; line-height: 1.65; }
+.friends-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.friend-card { display: flex; align-items: center; gap: 12px; min-width: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 14px; transition: border-color .18s, transform .18s, background .18s; }
+.friend-card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); background: color-mix(in srgb, var(--accent-soft) 55%, var(--surface)); transform: translateY(-2px); }
+.friend-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.friend-icon { position: relative; display: grid; width: 34px; height: 34px; flex: 0 0 34px; place-items: center; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--accent-soft); color: var(--accent); font-size: 1.05rem; }
+/* Friend icons are third-party artwork and may be mostly transparent — Yuesekaer's
+   .ico is 94% transparent and drawn in pure black, so it vanished into the dark
+   card. The white backdrop is painted behind the image (not on the wrapper, which
+   still needs --accent-soft for the "no icon" fallback) and is invisible behind
+   the icons that are already fully opaque. */
+.friend-icon img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #fff; }
+.friend-copy { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
+.friend-name { display: inline-flex; align-items: center; gap: 5px; overflow: hidden; color: var(--text); font-size: .9rem; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.friend-name i { color: var(--accent); font-size: .78rem; }
+.friend-desc { overflow: hidden; color: var(--muted); font-size: .76rem; text-overflow: ellipsis; white-space: nowrap; }
+
+.blog-result-count { margin: 0; border-bottom: 1px solid var(--line); padding: 12px 2px; color: var(--muted); font-family: var(--font-mono); font-size: .72rem; }
+.blog-empty { padding: 44px 2px; color: var(--muted); font-size: .86rem; }
+
+@media (max-width: 640px) {
+  .scroll-top { right: 14px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: 44px; height: 44px; }
+  .article-meta-line { gap: 8px 12px; }
+  .article-comments { margin-top: 44px; padding-top: 20px; }
+  .friends-grid { grid-template-columns: 1fr; }
+  .article-engagement { gap: 10px; }
 }

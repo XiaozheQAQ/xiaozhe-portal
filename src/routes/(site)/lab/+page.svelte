@@ -13,7 +13,7 @@
 <svelte:head><title>{i18n.t('page.lab')} — Xiaozhe</title><meta name="language" content={$i18n} /></svelte:head>
 
 <section class="pb-2 pt-5 lg:pt-7" data-locale={$locale}>
-  <p class="eyebrow">{i18n.t('lab.eyebrow')}</p>
+  <p class="eyebrow page-kicker">{i18n.t('lab.eyebrow')}</p>
   <h1 class="mt-3 text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">{i18n.t('page.lab')}</h1>
   <p class="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">{i18n.t('page.labDescription')}</p>
 </section>

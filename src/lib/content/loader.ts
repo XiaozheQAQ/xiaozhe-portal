@@ -11,6 +11,7 @@ import {
   parseSizeAttrs,
   type ImageSize
 } from './image-dimensions';
+import { countReadingStatsFromText, extractMarkdownText } from './reading-stats';
 
 export type ContentKind = 'blog' | 'projects' | 'lab';
 
@@ -36,6 +37,9 @@ export type ContentItem = {
   outline: Array<{ id: string; text: string; depth: number }>;
   readingTime: number;
   wordCount: number;
+  cjkChars: number;
+  latinWords: number;
+  searchText: string;
 };
 
 // Inline extension: `![alt](href){width=.. height=.. ratio=..}` attaches an optional
@@ -181,7 +185,10 @@ function prepareMarkdown(source: string) {
 function parseFile(path: string, raw: string): ContentItem {
   const parsed = matter(raw);
   const slug = String(parsed.data.slug ?? path.split('/').pop()!.replace(/\.md$/, ''));
-  const wordCount = parsed.content.trim().split(/\s+/).filter(Boolean).length;
+  // Count only reader-visible prose: frontmatter, markdown markers, link URLs,
+  // image sources and fenced code are all excluded (see reading-stats.ts).
+  const searchText = extractMarkdownText(parsed.content);
+  const stats = countReadingStatsFromText(searchText);
   const outline: Array<{ id: string; text: string; depth: number }> = [];
   const headingIds = new Map<string, number>();
   const tokens = marked.lexer(parsed.content);
@@ -215,8 +222,11 @@ function parseFile(path: string, raw: string): ContentItem {
     body: parsed.content,
     html,
     outline,
-    wordCount,
-    readingTime: Math.max(1, Math.ceil(wordCount / 200))
+    searchText,
+    wordCount: stats.wordCount,
+    readingTime: stats.readingTime,
+    cjkChars: stats.cjkChars,
+    latinWords: stats.latinWords
   };
 }
 

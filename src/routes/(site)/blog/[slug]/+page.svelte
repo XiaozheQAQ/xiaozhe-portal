@@ -2,9 +2,14 @@
   import { useI18n } from '#lib/i18n';
   import MarkdownContent from '#lib/components/content/MarkdownContent.svelte';
   import ProgressiveImage from '#lib/components/common/ProgressiveImage.svelte';
+  import ArticleEngagement from '#lib/components/common/ArticleEngagement.svelte';
+  import ArticleActions from '#lib/components/common/ArticleActions.svelte';
+  import GiscusComments from '#lib/components/common/GiscusComments.svelte';
+  import ScrollTopButton from '#lib/components/common/ScrollTopButton.svelte';
   import { onMount } from 'svelte';
   let { data } = $props();
   const i18n = useI18n();
+  const locale = i18n.locale;
   let activeHeading = $state('');
 
   onMount(() => {
@@ -28,29 +33,44 @@
   {/if}
 </svelte:head>
 
-<div class="article-layout mx-auto pb-24 pt-12 lg:pt-20">
+<div class="article-layout mx-auto pb-24 pt-5 lg:pt-7">
   <article>
-    <div class="font-mono text-xs text-[var(--muted)]">{data.post.data.date}</div>
-    <h1 class="mt-4 text-4xl font-semibold leading-tight tracking-[-0.045em] sm:text-5xl">{data.post.data.title}</h1>
+    <div class="page-kicker font-mono text-xs text-[var(--muted)]">{data.post.data.date}</div>
+    <h1 class="mt-3 text-4xl font-semibold leading-tight tracking-[-0.045em] sm:text-5xl">{data.post.data.title}</h1>
     <p class="mt-5 text-lg leading-8 text-[var(--muted)]">{data.post.data.description}</p>
     {#if data.post.data.language === 'zh-CN'}
       <div class="mt-5"><span class="content-language-badge">{i18n.t('content.chineseOnly')}</span></div>
     {/if}
     <div class="mt-5 flex flex-wrap gap-2">{#each data.post.data.tags as tag}<span class="rounded-full bg-[var(--accent-soft)] px-2.5 py-1 text-[11px] text-[var(--accent)]">{tag}</span>{/each}</div>
-    <div class="mt-4 font-mono text-xs text-[var(--muted)]">{data.post.readingTime} {$i18n === 'zh-CN' ? '分钟阅读' : 'min read'} · {data.post.wordCount} {$i18n === 'zh-CN' ? '字' : 'words'}</div>
+    <div class="article-meta-line">
+      <span class="article-reading">{i18n.t('article.readingTime').replace('{minutes}', String(data.post.readingTime))} · {i18n.t('article.words').replace('{count}', String(data.post.wordCount))}</span>
+      <ArticleEngagement slug={data.post.slug} />
+    </div>
+    <!-- The outline (and its action row) only exists above 760px; here the same
+         actions stay reachable in the article flow. -->
+    <div class="article-actions-inline" class:has-outline={data.post.outline.length > 0}>
+      <ArticleActions />
+    </div>
     {#if data.post.data.cover}
       <div class="article-cover">
         <ProgressiveImage src={data.post.data.cover} alt="" width={1600} height={900} priority zoomable />
       </div>
     {/if}
     <MarkdownContent html={data.post.html} className="prose mt-12" />
+    <GiscusComments />
   </article>
   {#if data.post.outline.length}
     <aside class="article-outline" aria-label={$i18n === 'zh-CN' ? '文章大纲' : 'Article outline'}>
-      <p class="article-outline-title">{$i18n === 'zh-CN' ? '文章大纲' : 'Outline'}</p>
+      <p class="article-outline-title">
+        <i class="ri-list-unordered article-outline-icon" aria-hidden="true"></i>
+        {$i18n === 'zh-CN' ? '文章大纲' : 'Outline'}
+      </p>
       {#each data.post.outline as heading}
         <a class:active={activeHeading === heading.id} href={`#${heading.id}`} data-depth={heading.depth}>{heading.text}</a>
       {/each}
+      <ArticleActions />
     </aside>
   {/if}
 </div>
+
+<ScrollTopButton />
