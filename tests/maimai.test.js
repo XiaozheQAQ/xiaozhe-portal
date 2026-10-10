@@ -16,6 +16,7 @@ import {
   mapTrend,
   readSection
 } from '../src/lib/server/maimai/summary.ts';
+import { MAIMAI_DIFFICULTY_TONES, difficultyTone } from '../src/lib/maimai/format.ts';
 
 /**
  * The upstream is never contacted here: every case drives the mapper with a
@@ -516,4 +517,109 @@ test('every maimai string exists in both dictionaries', () => {
   for (const key of zh) {
     assert.ok(en.has(key), `${key} is only translated into one language`);
   }
+});
+
+/* ── difficulty colours and score row layout ─────────────────────────── */
+
+const appCss = readFileSync('src/app.css', 'utf8');
+const scoreList = readFileSync('src/lib/features/maimai/MaimaiScoreList.svelte', 'utf8');
+
+/** WCAG relative luminance, to prove every difficulty chip stays legible. */
+function luminance(hex) {
+  const channels = [0, 2, 4].map((offset) => parseInt(hex.replace('#', '').slice(offset, offset + 2), 16) / 255);
+  const linear = channels.map((channel) => (channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+}
+
+function contrastRatio(foreground, background) {
+  const a = luminance(foreground);
+  const b = luminance(background);
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+
+const DIFFICULTY_CHIPS = [...appCss.matchAll(/\.maimai-diff\[data-difficulty='([a-z]+)'\]\s*\{([^}]*)\}/g)].map(([, tone, body]) => ({
+  tone,
+  fill: /--diff-fill:\s*(#[0-9a-f]{6})/i.exec(body)?.[1] ?? null,
+  ink: /--diff-ink:\s*(#[0-9a-f]{6})/i.exec(body)?.[1] ?? null
+}));
+
+test('the api level index and chart type map onto maimai own difficulties', () => {
+  assert.deepEqual([...MAIMAI_DIFFICULTY_TONES], ['basic', 'advanced', 'expert', 'master', 'remaster']);
+  assert.equal(difficultyTone(0, 'standard'), 'basic');
+  assert.equal(difficultyTone(1, 'dx'), 'advanced');
+  assert.equal(difficultyTone(2, 'standard'), 'expert');
+  assert.equal(difficultyTone(3, 'dx'), 'master');
+  assert.equal(difficultyTone(4, 'standard'), 'remaster');
+  assert.equal(difficultyTone(3, 'utage'), 'utage', 'utage wins over the level index');
+  assert.equal(difficultyTone(null, 'utage'), 'utage');
+  assert.equal(difficultyTone(null, null), null);
+  assert.equal(difficultyTone(9, 'standard'), null, 'an unknown index keeps a neutral chip');
+});
+
+test('the best 50 and the recent plays render the same score rows', () => {
+  const bests = readFileSync('src/lib/features/maimai/MaimaiBestsPanel.svelte', 'utf8');
+  const archive = readFileSync('src/lib/features/maimai/MaimaiArchive.svelte', 'utf8');
+  assert.equal((bests.match(/<MaimaiScoreList/g) || []).length, 2, 'best 35 and best 15');
+  assert.match(archive, /<MaimaiScoreList scores=\{archive\.recents\} variant="recent"/);
+  assert.match(scoreList, /data-difficulty=\{tone \?\? 'unknown'\}/);
+});
+
+test('difficulty chips carry literal maimai colours, never the page accent', () => {
+  assert.equal(DIFFICULTY_CHIPS.length, 6);
+  assert.deepEqual(DIFFICULTY_CHIPS.map((chip) => chip.tone), ['basic', 'advanced', 'expert', 'master', 'remaster', 'utage']);
+  for (const chip of DIFFICULTY_CHIPS) assert.ok(chip.fill && chip.ink, chip.tone + ' declares a literal fill and ink');
+  const start = appCss.indexOf(".maimai-diff[data-difficulty='basic']");
+  assert.ok(start > 0);
+  const block = appCss.slice(start, appCss.indexOf(".maimai-diff[data-difficulty='utage']") + 240);
+  assert.doesNotMatch(block, /@media|prefers-color-scheme|\.dark|\[data-theme/, 'no theme can repaint a difficulty');
+  assert.doesNotMatch(block, /var\(--accent/, 'the accent cannot repaint a difficulty');
+});
+
+test('every difficulty chip keeps its label at 4.5:1 or better', () => {
+  for (const chip of DIFFICULTY_CHIPS) {
+    const ratio = contrastRatio(chip.ink, chip.fill);
+    assert.ok(ratio >= 4.5, chip.tone + ' is ' + ratio.toFixed(2) + ':1');
+  }
+});
+
+test('re:master is a white chip with dark text, as the game shows it', () => {
+  const remaster = DIFFICULTY_CHIPS.find((chip) => chip.tone === 'remaster');
+  assert.equal(remaster.fill, '#f7f9fc');
+  assert.equal(remaster.ink, '#14202e');
+});
+
+test('the score rows line up their covers, titles, badges and rates', () => {
+  const row = /\.maimai-score \{[^}]*\}/.exec(appCss)?.[0] ?? '';
+  assert.match(row, /display: grid/);
+  assert.match(row, /grid-template-columns: 2\.4ch 46px minmax\(0, 1fr\) 5\.4rem/, 'cover and figures columns are fixed');
+  assert.match(row, /min-height:/, 'one card height across the list');
+  const jacket = /\.maimai-jacket \{[^}]*\}/.exec(appCss)?.[0] ?? '';
+  const sizes = [...jacket.matchAll(/(?:^|[;\s])(width|height):\s*([0-9.]+px)/g)].map(([, name, value]) => name + '=' + value);
+  assert.deepEqual(sizes, ['width=46px', 'height=46px'], 'every cover is the same square');
+  const title = /\.maimai-score-title \{[^}]*\}/.exec(appCss)?.[0] ?? '';
+  assert.match(title, /text-overflow: ellipsis/);
+  assert.match(title, /white-space: nowrap/);
+  const figures = /\.maimai-score-figures \{ display: grid; justify-items: end;[^}]*\}/.exec(appCss)?.[0] ?? '';
+  assert.match(figures, /justify-items: end/, 'every rate ends on one vertical line');
+  assert.match(figures, /align-content: center/);
+  for (const badge of ['maimai-tag', 'maimai-diff', 'maimai-rate']) {
+    assert.match(appCss, new RegExp('\\.' + badge + ' \\{[^}]*height: 19px'), badge + ' keeps one height, so no tag rides high');
+  }
+  assert.match(appCss, /\.maimai-achievement \{[^}]*font-variant-numeric: tabular-nums/);
+  assert.match(appCss, /\.maimai-score-sub \{[^}]*tabular-nums/, 'the footer figures keep their columns');
+});
+
+test('a field the api omits leaves a dash instead of moving the row', () => {
+  assert.match(scoreList, /const EMPTY = '—'/);
+  assert.match(scoreList, /class="maimai-slot-value">\{formatNumber\(score\.dxScore\) \?\? EMPTY\}/);
+  assert.match(scoreList, /class="maimai-achievement">\{achievement \?\? EMPTY\}/);
+  assert.match(scoreList, /maimai-rate-empty/);
+  assert.match(appCss, /\.maimai-slot-value \{ min-width:/);
+});
+
+test('the score rows wrap instead of overflowing on a narrow screen', () => {
+  const narrow = appCss.slice(appCss.indexOf('.maimai-stars'));
+  assert.match(narrow, /@media \(max-width: 760px\)/);
+  assert.match(appCss, /@media \(max-width: 1100px\) \{\s*\.maimai-score \{ grid-template-columns: 2\.4ch 46px minmax\(0, 1fr\); \}\s*\.maimai-score\[data-variant='recent'\] \{ grid-template-columns: 46px minmax\(0, 1fr\); \}\s*\.maimai-score-figures \{ grid-column: 1 \/ -1; \}/, 'the rate column moves onto its own line once the card is narrow');
+  assert.match(narrow, /\.maimai-jacket \{ width: 40px; height: 40px/, 'smaller covers on phones');
 });

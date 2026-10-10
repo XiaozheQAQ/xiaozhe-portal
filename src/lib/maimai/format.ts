@@ -71,6 +71,27 @@ export function difficultyLabel(levelIndex: number | null | undefined): string |
   return MAIMAI_DIFFICULTIES[levelIndex] ?? null;
 }
 
+/**
+ * maimai's own difficulty colours are applied by the stylesheet; this maps the
+ * API's values onto the six chips it defines.
+ *
+ * UTAGE is a chart *type* rather than a level index, so it wins over
+ * `level_index`: an utage chart is pink whichever slot the API fills in.
+ */
+export const MAIMAI_DIFFICULTY_TONES = ['basic', 'advanced', 'expert', 'master', 'remaster'] as const;
+
+export type MaimaiDifficultyTone = (typeof MAIMAI_DIFFICULTY_TONES)[number] | 'utage';
+
+/** Returns null for an unknown level index so the UI shows a neutral chip. */
+export function difficultyTone(
+  levelIndex: number | null | undefined,
+  chartType: string | null | undefined
+): MaimaiDifficultyTone | null {
+  if (typeof chartType === 'string' && chartType.trim().toLowerCase() === 'utage') return 'utage';
+  if (typeof levelIndex !== 'number' || !Number.isInteger(levelIndex)) return null;
+  return MAIMAI_DIFFICULTY_TONES[levelIndex] ?? null;
+}
+
 export function rateLabel(rate: string | null | undefined): string | null {
   return labelFrom(RATE_LABELS, rate);
 }

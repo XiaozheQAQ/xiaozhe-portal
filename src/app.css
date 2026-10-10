@@ -1233,25 +1233,55 @@ html.dark .theme-button .theme-icon-dark { display: inline-flex; }
 .maimai-column-title i { color: var(--accent-ink); }
 .maimai-column-count { margin-left: auto; border: 1px solid var(--line); border-radius: 999px; padding: 1px 7px; font-family: var(--font-mono); font-size: .62rem; }
 
+/* Score rows share one grid: rank | cover | title block | figures. The cover
+   column is a fixed size, so every title starts on the same vertical line, and
+   the figures column is a fixed width, so every achievement rate ends on the
+   same one, whatever a row is missing. */
 .maimai-scores { display: grid; gap: 6px; max-height: 560px; margin: 0; padding: 0; list-style: none; overflow-y: auto; overscroll-behavior: contain; }
-.maimai-score { display: flex; align-items: center; gap: 10px; min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--bg) 40%, var(--surface)); padding: 8px 10px; }
-.maimai-score-rank { width: 20px; flex: 0 0 20px; color: var(--muted); font-family: var(--font-mono); font-size: .7rem; text-align: right; }
-.maimai-jacket { position: relative; display: grid; width: 38px; height: 38px; flex: 0 0 38px; place-items: center; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: var(--accent-soft); }
-.maimai-jacket-fallback { color: var(--accent-ink); font-size: .95rem; }
+.maimai-score { display: grid; grid-template-columns: 2.4ch 46px minmax(0, 1fr) 5.4rem; align-items: center; gap: 10px; min-width: 0; min-height: 64px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--bg) 40%, var(--surface)); padding: 8px 12px; }
+.maimai-score[data-variant='recent'] { grid-template-columns: 46px minmax(0, 1fr) 5.4rem; }
+.maimai-score-rank { color: var(--muted); font-family: var(--font-mono); font-size: .7rem; font-variant-numeric: tabular-nums; text-align: right; }
+.maimai-jacket { position: relative; display: grid; width: 46px; height: 46px; place-items: center; overflow: hidden; border: 1px solid var(--line); border-radius: 9px; background: var(--accent-soft); }
+.maimai-jacket-fallback { color: var(--accent-ink); font-size: 1rem; }
 .maimai-jacket img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.maimai-score-main { min-width: 0; flex: 1; }
+.maimai-score-main { display: grid; gap: 4px; min-width: 0; }
 .maimai-score-title { margin: 0; overflow: hidden; font-size: .82rem; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
-.maimai-score-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin: 5px 0 0; }
-.maimai-score-sub { display: flex; flex-wrap: wrap; gap: 10px; margin: 5px 0 0; color: var(--muted); font-family: var(--font-mono); font-size: .64rem; }
+.maimai-score-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin: 0; }
+.maimai-score-sub { display: flex; flex-wrap: wrap; align-items: baseline; gap: 14px; margin: 0; color: var(--muted); font-family: var(--font-mono); font-size: .64rem; font-variant-numeric: tabular-nums; }
+.maimai-score-slot { display: inline-flex; align-items: baseline; gap: 5px; white-space: nowrap; }
+.maimai-slot-value { min-width: 4.5ch; color: var(--text); }
 .maimai-score-time { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-family: var(--font-mono); font-size: .64rem; }
-.maimai-tag { border: 1px solid color-mix(in srgb, var(--accent-ink) 35%, var(--line)); border-radius: 6px; padding: 1px 5px; color: var(--accent-ink); background: var(--accent-soft); font-family: var(--font-mono); font-size: .6rem; font-weight: 650; }
+.maimai-tag { display: inline-flex; align-items: center; height: 19px; border: 1px solid color-mix(in srgb, var(--accent-ink) 35%, var(--line)); border-radius: 6px; padding: 0 5px; color: var(--accent-ink); background: var(--accent-soft); font-family: var(--font-mono); font-size: .6rem; font-weight: 650; line-height: 1; }
 .maimai-tag-plain { border-color: var(--line); color: var(--muted); background: transparent; }
 .maimai-tag-combo { border-color: color-mix(in srgb, #2c9b67 40%, var(--line)); color: #258357; background: color-mix(in srgb, #2c9b67 10%, transparent); }
-.maimai-score-figures { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-.maimai-achievement { font-family: var(--font-mono); font-size: .84rem; font-weight: 700; letter-spacing: -.02em; }
-.maimai-rate { border: 1px solid color-mix(in srgb, var(--accent-ink) 40%, var(--line)); border-radius: 6px; padding: 1px 6px; color: var(--accent-ink); font-family: var(--font-mono); font-size: .64rem; font-weight: 700; }
-.maimai-stars { color: var(--accent-ink); letter-spacing: .05em; }
-.maimai-empty { margin: 0; color: var(--muted); font-size: .78rem; }
+
+/* Below this width the two Best columns leave a card too narrow for one tag
+   line, so the rate column moves onto its own full-width line. The tag row then
+   fits again and every card in a list keeps the same height — on a phone, where
+   wrapping is allowed, the same block still keeps the rates on one right edge. */
+@media (max-width: 1100px) {
+  .maimai-score { grid-template-columns: 2.4ch 46px minmax(0, 1fr); }
+  .maimai-score[data-variant='recent'] { grid-template-columns: 46px minmax(0, 1fr); }
+  .maimai-score-figures { grid-column: 1 / -1; }
+}
+
+/* Difficulty chips keep maimai's own colours. They are literal values — never
+   the page accent — declared once, outside every theme block, so switching the
+   theme, the accent or the language cannot repaint them. Each chip uses
+   whichever of near-black or white holds the pair at 4.5:1 or better. */
+.maimai-diff { display: inline-flex; align-items: center; height: 19px; border: 1px solid var(--diff-line, var(--line)); border-radius: 6px; padding: 0 6px; color: var(--diff-ink, var(--muted)); background: var(--diff-fill, transparent); font-family: var(--font-mono); font-size: .6rem; font-weight: 700; letter-spacing: .01em; line-height: 1; white-space: nowrap; }
+.maimai-diff[data-difficulty='basic'] { --diff-fill: #1c9b5c; --diff-ink: #04240f; --diff-line: #0d6b3c; }
+.maimai-diff[data-difficulty='advanced'] { --diff-fill: #f0a418; --diff-ink: #3a2200; --diff-line: #b9790a; }
+.maimai-diff[data-difficulty='expert'] { --diff-fill: #d92b38; --diff-ink: #ffffff; --diff-line: #ad1d29; }
+.maimai-diff[data-difficulty='master'] { --diff-fill: #7c3aed; --diff-ink: #ffffff; --diff-line: #5f27c4; }
+.maimai-diff[data-difficulty='remaster'] { --diff-fill: #f7f9fc; --diff-ink: #14202e; --diff-line: #b9c4d4; }
+.maimai-diff[data-difficulty='utage'] { --diff-fill: #e858a0; --diff-ink: #2b0616; --diff-line: #b73c7b; }
+
+.maimai-score-figures { display: grid; justify-items: end; align-content: center; gap: 5px; }
+.maimai-achievement { font-family: var(--font-mono); font-size: .88rem; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.02em; text-align: right; white-space: nowrap; }
+.maimai-rate { display: inline-flex; align-items: center; height: 19px; border: 1px solid color-mix(in srgb, var(--accent-ink) 40%, var(--line)); border-radius: 6px; padding: 0 6px; color: var(--accent-ink); font-family: var(--font-mono); font-size: .64rem; font-weight: 700; line-height: 1; }
+.maimai-rate-empty { border-color: var(--line); color: var(--muted); }
+.maimai-stars { color: var(--accent-ink); letter-spacing: .05em; }.maimai-empty { margin: 0; color: var(--muted); font-size: .78rem; }
 .maimai-partial { display: flex; align-items: center; gap: 7px; margin: 0; color: var(--muted); font-size: .74rem; }
 .maimai-partial i { color: #c98a1f; }
 
@@ -1285,12 +1315,18 @@ html.dark .theme-button .theme-icon-dark { display: inline-flex; }
   .maimai-stat-total { grid-column: span 2; }
   .maimai-best-grid { grid-template-columns: minmax(0, 1fr); }
   .maimai-scores { max-height: 460px; }
-  .maimai-score { flex-wrap: wrap; }
-  .maimai-score-figures { flex-direction: row; align-items: center; gap: 8px; width: 100%; justify-content: flex-end; }
+  /* The card runs out of width before the figures do, so they move onto their
+     own full-width line: still right-aligned, still on one line across rows. */
+  /* The placement below 1101px already stacks the figures; a phone just gets
+     less room, so only the list height changes here. */
 }
 @media (max-width: 640px) {
   .maimai-profile { flex-direction: column; }
   .maimai-avatar { width: 64px; height: 64px; flex: 0 0 64px; }
+  .maimai-score { grid-template-columns: 1.8ch 40px minmax(0, 1fr); gap: 8px; padding: 8px 10px; }
+  .maimai-score[data-variant='recent'] { grid-template-columns: 40px minmax(0, 1fr); }
+  .maimai-jacket { width: 40px; height: 40px; border-radius: 8px; }
+  .maimai-score-sub { gap: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .maimai-skeleton span, .maimai-spin { animation: none; }
