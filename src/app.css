@@ -148,8 +148,22 @@ html.theme-initializing *, html.theme-initializing *::before, html.theme-initial
 /* With no wipe to carry a change, the colours cross-fade instead of snapping: every
    element that reads a colour token animates from its old value to the new one.
    Reduced motion skips this as well, so the preference still gets a hard cut. */
-html.appearance-fading *, html.appearance-fading *::before, html.appearance-fading *::after {
-  transition: background-color .45s ease, color .45s ease, border-color .45s ease, outline-color .45s ease, box-shadow .45s ease, fill .45s ease, stroke .45s ease !important;
+html.appearance-fading *:not(html):not(body),
+html.appearance-fading *:not(html):not(body)::before,
+html.appearance-fading *:not(html):not(body)::after {
+  transition: background-color .45s ease, color .45s ease, border-color .45s ease !important;
+}
+/* The grid wash on <body> is a full-viewport gradient at 6% opacity: fading it
+   repaints the largest surface on screen every frame for a difference nobody
+   can see, so it lands on the new theme with the rest of the change. */
+html.appearance-fading body { transition: none !important; }
+/* A blurred bar recomputes its backdrop whenever what is behind it changes -
+   which, during an appearance change, is every frame. Dropping the blur for the
+   length of the change keeps the bar's own colour fade and removes that
+   per-frame work, which is what makes the header stutter on a phone. */
+html.appearance-fading .site-header,
+html.theme-revealing .site-header {
+  backdrop-filter: none;
 }
 
 html.theme-revealing *, html.theme-revealing *::before, html.theme-revealing *::after {
@@ -562,13 +576,6 @@ html.dark .theme-button .theme-icon-dark { display: inline-flex; }
 .accent-swatch.selected .accent-dot { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text) 14%, transparent), 0 0 0 2px var(--surface), 0 0 0 3px var(--accent); }
 
 .mobile-menu-controls { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 0 2px; border-top: 1px solid var(--line); margin-top: 6px; }
-.mobile-menu-colors { flex: 1 0 100%; display: grid; gap: 8px; margin-top: 2px; }
-.mobile-menu-colors-label { color: var(--muted); font-size: .72rem; font-weight: 650; letter-spacing: .04em; }
-/* The generic .mobile-menu-controls button rule draws pills; the swatches keep
-   their own square shape and read as a palette instead. */
-.mobile-menu-controls .accent-swatch { padding: 0; border-radius: 11px; background: transparent; }
-.mobile-menu-controls .accent-swatch.selected { border-color: var(--accent-ink); background: var(--accent-soft); }
-.mobile-menu-controls .accent-swatch .accent-dot { width: 24px; height: 24px; }
 .mobile-menu-controls button { border: 1px solid var(--line); border-radius: 999px; padding: 7px 10px; background: var(--surface); color: var(--muted); font-size: .78rem; cursor: pointer; }
 .mobile-menu-controls button.selected, .mobile-menu-controls button:hover { border-color: var(--accent-ink); color: var(--accent-ink); background: var(--accent-soft); }
 .site-main { min-height: calc(100vh - 68px); padding: 32px 0 64px; }
@@ -1199,8 +1206,12 @@ html.dark .theme-button .theme-icon-dark { display: inline-flex; }
 .maimai-retry:disabled { cursor: wait; opacity: .7; }
 
 .maimai-skeleton { display: grid; gap: 12px; }
-.maimai-skeleton span { display: block; height: 74px; border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(90deg, color-mix(in srgb, var(--surface) 94%, var(--bg)), color-mix(in srgb, var(--surface) 74%, var(--bg)), color-mix(in srgb, var(--surface) 94%, var(--bg))); background-size: 200% 100%; animation: maimai-shimmer 1.5s ease-in-out infinite; }
-@keyframes maimai-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+/* The shimmer sweeps a gradient across the placeholder instead of moving the
+   placeholder's own background: a transform-only animation runs off the main
+   thread, so a loading list no longer competes with the page around it. */
+.maimai-skeleton span { position: relative; display: block; height: 74px; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--surface) 86%, var(--bg)); }
+.maimai-skeleton span::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--surface) 58%, var(--bg)), transparent); transform: translateX(-100%); animation: maimai-shimmer 1.5s ease-in-out infinite; }
+@keyframes maimai-shimmer { to { transform: translateX(100%); } }
 .maimai-loading { display: flex; align-items: center; gap: 7px; margin: 0; color: var(--muted); font-size: .78rem; }
 .maimai-spin { animation: status-spin .9s linear infinite; }
 
@@ -1238,7 +1249,9 @@ html.dark .theme-button .theme-icon-dark { display: inline-flex; }
    the figures column is a fixed width, so every achievement rate ends on the
    same one, whatever a row is missing. */
 .maimai-scores { display: grid; gap: 6px; max-height: 560px; margin: 0; padding: 0; list-style: none; overflow-y: auto; overscroll-behavior: contain; }
-.maimai-score { display: grid; grid-template-columns: 2.4ch 46px minmax(0, 1fr) 5.4rem; align-items: center; gap: 10px; min-width: 0; min-height: 64px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--bg) 40%, var(--surface)); padding: 8px 12px; }
+/* Off-screen rows are skipped whole: a hundred-row archive only pays for the
+   rows around the viewport, and the remembered size keeps the scrollbar true. */
+.maimai-score { content-visibility: auto; contain-intrinsic-size: auto 80px; display: grid; grid-template-columns: 2.4ch 46px minmax(0, 1fr) 5.4rem; align-items: center; gap: 10px; min-width: 0; min-height: 64px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--bg) 40%, var(--surface)); padding: 8px 12px; }
 .maimai-score[data-variant='recent'] { grid-template-columns: 46px minmax(0, 1fr) 5.4rem; }
 .maimai-score-rank { color: var(--muted); font-family: var(--font-mono); font-size: .7rem; font-variant-numeric: tabular-nums; text-align: right; }
 .maimai-jacket { position: relative; display: grid; width: 46px; height: 46px; place-items: center; overflow: hidden; border: 1px solid var(--line); border-radius: 9px; background: var(--accent-soft); }

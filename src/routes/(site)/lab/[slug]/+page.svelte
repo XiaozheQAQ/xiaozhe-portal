@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Seo from '#lib/components/common/Seo.svelte';
+  import { breadcrumbJsonLd, techArticleJsonLd } from '#lib/seo/meta';
   import { useI18n } from '#lib/i18n';
   import MarkdownContent from '#lib/components/content/MarkdownContent.svelte';
   let { data } = $props();
@@ -9,7 +11,28 @@
   };
 </script>
 
-<svelte:head><title>{data.lab.data.title} — {i18n.t('page.lab')} — Xiaozhe</title><meta name="language" content={$i18n} /></svelte:head>
+<Seo
+  title={`${data.lab.data.title} — ${i18n.t('page.lab')} — Xiaozhe`}
+  description={data.lab.data.description}
+  path={`/lab/${data.lab.slug}`}
+  type="article"
+  published={data.lab.data.date}
+  tags={data.lab.data.tags}
+  jsonLd={[
+    techArticleJsonLd({
+      title: data.lab.data.title,
+      description: data.lab.data.description,
+      path: `/lab/${data.lab.slug}`,
+      published: data.lab.data.date,
+      tags: data.lab.data.tags
+    }),
+    breadcrumbJsonLd([
+      { name: 'Xiaozhe', path: '/' },
+      { name: i18n.t('page.lab'), path: '/lab' },
+      { name: data.lab.data.title, path: `/lab/${data.lab.slug}` }
+    ])
+  ]}
+/>
 
 <article class="lab-detail mx-auto pb-24 pt-5 lg:pt-7">
   <header class="lab-detail-header">

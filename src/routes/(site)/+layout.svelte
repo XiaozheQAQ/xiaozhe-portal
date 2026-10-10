@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { APPLE_TOUCH_ICON, FEED_PATH, MANIFEST_PATH, SITE_NAME } from '#lib/seo/meta';
   import '../../app.css';
   import { page } from '$app/state';
   import { flushSync, onMount } from 'svelte';
@@ -277,16 +278,21 @@
   });
 </script>
 
+<!-- The layout keeps only what is identical on every page. Titles, descriptions
+     and social cards belong to the page itself, so a page can never end up
+     advertising the homepage description to a search engine. -->
 <svelte:head>
-  <meta name="description" content="Xiaozhe's personal web portal — writing, experiments and a live status snapshot." />
   <meta name="theme-color" content={dark ? '#0d1016' : '#fafbfc'} />
-  <link rel="icon" type="image/jpeg" href="/images/xiaozhe-avatar.jpg" />
-  <link rel="apple-touch-icon" href="/images/xiaozhe-avatar.jpg" />
-  <link rel="canonical" href={`https://xiaozhe.dev${page.url.pathname}`} />
-  <meta property="og:title" content="Xiaozhe — Web / AI / Systems" />
-  <meta property="og:description" content="Writing, experiments and a live status snapshot from Xiaozhe." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content={`https://xiaozhe.dev${page.url.pathname}`} />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href={APPLE_TOUCH_ICON} />
+  <link rel="manifest" href={MANIFEST_PATH} />
+  <link rel="alternate" type="application/rss+xml" title="Xiaozhe" href={FEED_PATH} />
+  <meta name="application-name" content={SITE_NAME} />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content={SITE_NAME} />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 </svelte:head>
 
 {#key $i18n}

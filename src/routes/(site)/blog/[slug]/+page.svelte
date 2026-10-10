@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Seo from '#lib/components/common/Seo.svelte';
+  import { blogPostingJsonLd, breadcrumbJsonLd } from '#lib/seo/meta';
   import { useI18n } from '#lib/i18n';
   import MarkdownContent from '#lib/components/content/MarkdownContent.svelte';
   import ProgressiveImage from '#lib/components/common/ProgressiveImage.svelte';
@@ -24,14 +26,32 @@
   });
 </script>
 
-<svelte:head>
-  <title>{data.post.data.title} — Xiaozhe</title>
-  <meta name="description" content={data.post.data.description} />
-  <meta name="language" content={$i18n} />
-  {#if data.post.data.cover}
-    <meta property="og:image" content={`https://xiaozhe.dev${data.post.data.cover}`} />
-  {/if}
-</svelte:head>
+<Seo
+  title={`${data.post.data.title} — Xiaozhe`}
+  description={data.post.data.description}
+  path={`/blog/${data.post.slug}`}
+  type="article"
+  image={data.post.data.cover}
+  published={data.post.data.date}
+  modified={data.post.data.updated}
+  tags={data.post.data.tags}
+  jsonLd={[
+    blogPostingJsonLd({
+      title: data.post.data.title,
+      description: data.post.data.description,
+      path: `/blog/${data.post.slug}`,
+      image: data.post.data.cover,
+      published: data.post.data.date,
+      modified: data.post.data.updated,
+      tags: data.post.data.tags
+    }),
+    breadcrumbJsonLd([
+      { name: 'Xiaozhe', path: '/' },
+      { name: i18n.t('page.blog'), path: '/blog' },
+      { name: data.post.data.title, path: `/blog/${data.post.slug}` }
+    ])
+  ]}
+/>
 
 <div class="article-layout mx-auto pb-24 pt-5 lg:pt-7">
   <article>

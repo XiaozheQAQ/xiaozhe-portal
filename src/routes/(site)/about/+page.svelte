@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Seo from '#lib/components/common/Seo.svelte';
   import { useI18n } from '#lib/i18n';
   import ProgressiveImage from '#lib/components/common/ProgressiveImage.svelte';
   const i18n = useI18n();
@@ -71,10 +72,11 @@
   ];
 </script>
 
-<svelte:head>
-  <title>{i18n.t('page.about')} — Xiaozhe</title>
-  <meta name="language" content={$i18n} />
-</svelte:head>
+<Seo
+  title={`${i18n.t('page.about')} — Xiaozhe`}
+  description={i18n.t('page.aboutDescription')}
+  path="/about"
+/>
 
 <div class="about-page">
   <!-- Page header -->
@@ -96,7 +98,7 @@
       <div class="about-main-body">
         <ProgressiveImage
           class="about-main-avatar"
-          src="/images/xiaozhe-avatar.jpg"
+          src="/images/xiaozhe-avatar-192.jpg"
           alt="Xiaozhe Nice"
           width={88}
           height={88}

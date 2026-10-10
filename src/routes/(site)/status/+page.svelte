@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Seo from '#lib/components/common/Seo.svelte';
   import { onMount } from 'svelte';
   import { useI18n } from '#lib/i18n';
   import { courses, statusServices, getScheduleDetails, semesterInfo, type RoomGuide } from '#lib/status/schedule';
@@ -115,11 +116,11 @@
   let schedule = $derived(now ? getScheduleDetails(now) : null);
 </script>
 
-<svelte:head>
-  <title>{i18n.t('page.status')} — Xiaozhe</title>
-  <meta name="description" content={i18n.t('page.statusDescription')} />
-  <meta name="language" content={$i18n} />
-</svelte:head>
+<Seo
+  title={`${i18n.t('page.status')} — Xiaozhe`}
+  description={i18n.t('page.statusDescription')}
+  path="/status"
+/>
 
 <div class="status-page" data-locale={$locale}>
   <section class="pb-2 pt-5 lg:pt-7">

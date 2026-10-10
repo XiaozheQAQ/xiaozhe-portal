@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Seo from '#lib/components/common/Seo.svelte';
+  import { personJsonLd, websiteJsonLd } from '#lib/seo/meta';
   import SectionHeader from '#lib/components/common/SectionHeader.svelte';
   import PostItem from '#lib/features/blog/PostItem.svelte';
   import LabItem from '#lib/features/lab/LabItem.svelte';
@@ -16,10 +18,12 @@
   }
 </script>
 
-<svelte:head>
-  <title>{i18n.t('hero.title')} — Xiaozhe</title>
-  <meta name="language" content={$i18n} />
-</svelte:head>
+<Seo
+  title={`${i18n.t('hero.title')} — Xiaozhe`}
+  description={i18n.t('page.homeDescription')}
+  path="/"
+  jsonLd={[websiteJsonLd(i18n.t('page.homeDescription')), personJsonLd()]}
+/>
 
 <div data-locale={$locale}>
 <section class="hero-grid">

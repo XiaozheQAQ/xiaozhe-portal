@@ -5,6 +5,8 @@ export const prerender = true;
 export const GET: RequestHandler = ({ url }) =>
   new Response(`User-agent: *
 Allow: /
+Disallow: /api/
+
 Sitemap: ${url.origin}/sitemap.xml
 `, {
     headers: { 'content-type': 'text/plain; charset=utf-8' }

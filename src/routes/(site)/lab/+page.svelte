@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Seo from '#lib/components/common/Seo.svelte';
   import LabItem from '#lib/features/lab/LabItem.svelte';
   import { useI18n } from '#lib/i18n';
   let { data } = $props();
@@ -10,7 +11,11 @@
   ];
 </script>
 
-<svelte:head><title>{i18n.t('page.lab')} — Xiaozhe</title><meta name="language" content={$i18n} /></svelte:head>
+<Seo
+  title={`${i18n.t('page.lab')} — Xiaozhe`}
+  description={i18n.t('page.labDescription')}
+  path="/lab"
+/>
 
 <section class="pb-2 pt-5 lg:pt-7" data-locale={$locale}>
   <p class="eyebrow page-kicker">{i18n.t('lab.eyebrow')}</p>

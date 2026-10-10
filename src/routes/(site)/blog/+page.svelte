@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Seo from '#lib/components/common/Seo.svelte';
+  import { blogJsonLd } from '#lib/seo/meta';
   import PostItem from '#lib/features/blog/PostItem.svelte';
   import { useI18n } from '#lib/i18n';
   import SearchBox from '#lib/components/common/SearchBox.svelte';
@@ -29,7 +31,12 @@
   });
 </script>
 
-<svelte:head><title>{i18n.t('page.blog')} — Xiaozhe</title><meta name="language" content={$i18n} /></svelte:head>
+<Seo
+  title={`${i18n.t('page.blog')} — Xiaozhe`}
+  description={i18n.t('page.blogDescription')}
+  path="/blog"
+  jsonLd={[blogJsonLd({ name: i18n.t('page.blog'), description: i18n.t('page.blogDescription'), path: '/blog' })]}
+/>
 
 <section class="pb-12 pt-5 lg:pt-7" data-locale={$locale}>
   <p class="eyebrow page-kicker">Notes</p>

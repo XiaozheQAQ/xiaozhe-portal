@@ -19,8 +19,6 @@
   let accentOpen = $state(false);
   let accentButton = $state<HTMLButtonElement>();
   let accentPopover = $state<HTMLDivElement>();
-  /** The palette grid inside the mobile menu, which needs its own focus handling. */
-  let menuColors = $state<HTMLDivElement>();
   let accentPos = $state({ left: 0, top: 0 });
   /** False until the panel has been measured where it is about to appear. */
   let accentReady = $state(false);
@@ -156,7 +154,7 @@
 <header class="site-header">
   <div class="header-inner">
     <a href="/" class="brand" aria-label="Xiaozhe home">
-      <ProgressiveImage class="brand-avatar" src="/images/xiaozhe-avatar.jpg" alt="Xiaozhe Nice" width={32} height={32} priority spinnerSize={16} />
+      <ProgressiveImage class="brand-avatar" src="/images/xiaozhe-avatar-64.jpg" alt="Xiaozhe Nice" width={32} height={32} priority spinnerSize={16} />
       <span class="brand-name">Xiaozhe Nice</span>
       <span class="brand-section">{i18n.t('brand.blog')}</span>
     </a>
@@ -250,36 +248,6 @@
       <div class="mobile-menu-controls">
         <button onclick={() => selectLocale('zh-CN')} class:selected={$locale === 'zh-CN'}>中文</button>
         <button onclick={() => selectLocale('en')} class:selected={$locale === 'en'}>English</button>
-        <!-- The header switch already covers light/dark, so the menu carries the
-             palette instead: one control per job, and the colour picker is
-             reachable where the other menu-only controls live. -->
-        <div class="mobile-menu-colors">
-          <span class="mobile-menu-colors-label">{i18n.t('accent.label')}</span>
-          <div
-            class="accent-grid"
-            bind:this={menuColors}
-            role="radiogroup"
-            tabindex="-1"
-            aria-label={i18n.t('accent.label')}
-            onkeydown={(event) => handleAccentKeys(event, menuColors)}
-          >
-            {#each ACCENTS as option}
-              <button
-                class="accent-swatch"
-                class:selected={accent === option.id}
-                role="radio"
-                aria-checked={accent === option.id}
-                aria-label={i18n.t(accentLabelKey(option.id))}
-                title={i18n.t(accentLabelKey(option.id))}
-                tabindex={accent === option.id ? 0 : -1}
-                style="--swatch: {swatchColor(option)}"
-                onclick={(event) => selectAccent(option.id, event)}
-              >
-                <span class="accent-dot" aria-hidden="true"></span>
-              </button>
-            {/each}
-          </div>
-        </div>
       </div>
     </nav>
   {/if}

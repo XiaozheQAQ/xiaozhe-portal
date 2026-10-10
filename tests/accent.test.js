@@ -249,20 +249,28 @@ test('the palette leads the header controls and opens a fixed panel', () => {
   assert.ok(header.includes('bind:this={accentButton}') && header.includes('bind:this={accentPopover}'), 'both nodes are measured');
 });
 
-test('the mobile menu carries the palette instead of a second theme switch', () => {
+test('the palette lives in the header, and the mobile menu keeps only the languages', () => {
   /* lastIndexOf: the desktop nav closes long before the mobile menu does. */
   const menu = header.slice(header.indexOf('mobile-menu-controls'), header.lastIndexOf('</nav>'));
   assert.ok(!header.includes('theme-options'), 'the duplicate light/dark pills are gone');
   assert.ok(!header.includes("selectTheme('light'"), 'and so is the handler they needed');
   assert.ok(!header.includes('selectTheme'), 'the unused prop left the component with them');
-  assert.match(menu, /class="mobile-menu-colors"/, 'the menu owns the colour picker');
-  assert.match(menu, /mobile-menu-colors-label/, 'and labels it');
-  assert.match(menu, /\{#each ACCENTS as option\}/, 'from the same palette data as the panel');
-  assert.match(menu, /bind:this={menuColors}/, 'the menu grid is addressable for focus');
-  assert.ok(!appCss.includes('.theme-options'), 'the pill styles went with the markup');
-  assert.match(appCss, /\.mobile-menu-controls \{[^}]*flex-wrap:\s*wrap/, 'the palette can take its own row');
-  assert.match(appCss, /\.mobile-menu-controls \.accent-swatch \{[^}]*border-radius:\s*11px/, 'swatches are not pill shaped');
-  assert.equal((header.match(/role="radio"/g) || []).length, 2, 'one radio template per grid');
+  assert.ok(!menu.includes('mobile-menu-colors'), 'the menu no longer carries a second palette');
+  assert.ok(!menu.includes('accent-grid'), 'and not a second copy of the swatch grid');
+  assert.ok(!header.includes('menuColors'), 'the extra focus container went with it');
+  assert.ok(!appCss.includes('.mobile-menu-colors'), 'the pill styles went with the markup');
+  assert.match(menu, /selectLocale\('zh-CN'\)/, 'the menu still switches language');
+  assert.match(menu, /selectLocale\('en'\)/, 'both ways round');
+  assert.equal((header.match(/role="radio"/g) || []).length, 1, 'one swatch grid is left, in the popover');
+  /* The header palette has to stay reachable where it now lives alone. */
+  assert.ok(!/\.accent-control[^{}]*\{[^}]*display:\s*none/.test(appCss), 'no rule hides the header palette');
+  assert.match(appCss, /@media \(max-width: 760px\)[\s\S]*?\.menu-button \{ display: inline-flex; \}/, 'the mobile header still shows the menu button');
+});
+
+test('the mobile header fits the palette button without a second control set', () => {
+  const mobile = appCss.slice(appCss.indexOf('@media (max-width: 760px)'), appCss.indexOf('@media (max-width: 760px)') + 1200);
+  assert.ok(mobile.includes('.menu-button { display: inline-flex; }'), 'the burger appears on phones');
+  assert.ok(!mobile.includes('.accent-control'), 'the palette button is left alone at that width');
 });
 
 test('a narrow header cannot push its controls out of the body box', () => {
@@ -299,9 +307,9 @@ test('a change with no wipe cross-fades instead of snapping', () => {
 test('the panel offers a radio per swatch and wires the keyboard', () => {
   assert.match(header, /\{#each ACCENTS as option\}/);
   assert.equal(
-    (header.match(/onkeydown=\{\(event\) => handleAccentKeys\(event, (accentPopover|menuColors)\)\}/g) || []).length,
-    2,
-    'both the panel and the menu palette are keyboard navigable'
+    (header.match(/onkeydown=\{\(event\) => handleAccentKeys\(event, accentPopover\)\}/g) || []).length,
+    1,
+    'the swatch grid is keyboard navigable'
   );
   assert.match(header, /role="radio"/);
   assert.match(header, /aria-checked=\{accent === option\.id\}/);

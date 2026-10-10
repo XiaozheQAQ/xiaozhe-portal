@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Seo from '#lib/components/common/Seo.svelte';
   let { data } = $props();
   import { onMount } from 'svelte';
   import { useI18n } from '#lib/i18n';
@@ -14,11 +15,12 @@
   );
 </script>
 
-<svelte:head>
-  <title>{i18n.t('page.search')} — Xiaozhe</title>
-  <meta name="description" content={i18n.t('search.placeholder')} />
-  <meta name="language" content={$i18n} />
-</svelte:head>
+<Seo
+  title={`${i18n.t('page.search')} — Xiaozhe`}
+  description={i18n.t('page.searchDescription')}
+  path="/search"
+  noindex
+/>
 
 <section class="pb-12 pt-10 lg:pt-16" data-locale={$locale}>
   <p class="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent-ink)]">Index</p>
