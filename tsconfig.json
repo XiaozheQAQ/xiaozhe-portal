@@ -8,12 +8,17 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
-      "#lib/*": ["src/lib/*"]
+      "#lib/*": [
+        "src/lib/*"
+      ]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
     "ignoreDeprecations": "6.0"
-  }
+  },
+  "exclude": [
+    "src/service-worker.ts"
+  ]
 }

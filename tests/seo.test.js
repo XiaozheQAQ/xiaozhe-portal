@@ -9,6 +9,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 import {
   SITE_ORIGIN,
@@ -30,6 +32,28 @@ import {
 } from '../src/lib/seo/meta.ts';
 
 const read = (path) => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
+const projectRoot = fileURLToPath(new URL('../', import.meta.url));
+const hasGit = (() => {
+  try {
+    execFileSync('git', ['rev-parse', '--is-inside-work-tree'], { cwd: projectRoot, stdio: 'ignore' });
+    return true;
+  } catch {
+    return false; // no git here, so there is nothing to check against
+  }
+})();
+
+/** git check-ignore exits 0 when a rule excludes the path. */
+function isIgnored(path) {
+  if (!hasGit) return false;
+  try {
+    execFileSync('git', ['check-ignore', '--quiet', path], { cwd: projectRoot, stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+
 const appCss = read('src/app.css');
 const layout = read('src/routes/(site)/+layout.svelte');
 const seoComponent = read('src/lib/components/common/Seo.svelte');
@@ -258,4 +282,34 @@ test('the pages ship the small avatar, not the 1080px original', () => {
   const full = readFileSync(new URL('../static/images/xiaozhe-avatar.jpg', import.meta.url)).length;
   assert.ok(small * 10 < full, 'the header avatar should be an order of magnitude smaller');
   assert.ok(/xiaozhe-avatar\.jpg/.test(read('src/lib/seo/meta.ts')), 'the full-size portrait still backs the social card');
+});
+
+test('the icons a page links to are on disk and able to be committed', () => {
+  // An ignore rule that swallows an asset is invisible locally: the build finds
+  // the file on disk, the host never receives it, and every page 404s on its own
+  // favicon while the prerenderer fails the whole build.
+  const linked = new Set([...layout.matchAll(/href="(\/icons\/[A-Za-z0-9._-]+\.png)"/g)].map((hit) => hit[1]));
+  linked.add(APPLE_TOUCH_ICON);
+  for (const icon of JSON.parse(read('static/manifest.webmanifest')).icons) linked.add(icon.src);
+  assert.ok(linked.size >= 4, 'the scan should find the linked icons, found ' + linked.size);
+  for (const url of linked) {
+    assert.ok(existsSync(new URL('../static' + url, import.meta.url)), url + ' is linked but missing from static/');
+    assert.equal(isIgnored('static' + url), false, url + ' would never reach the deploy');
+  }
+});
+
+test('nothing the site ships from static/ is invisible to git', () => {
+  const parked = new Set(['static/images/xiaozhe-logo.png']); // never referenced again; kept on disk only
+  const files = [];
+  const walk = (dir) => {
+    for (const entry of readdirSync(new URL('../' + dir + '/', import.meta.url), { withFileTypes: true })) {
+      const path = dir + '/' + entry.name;
+      if (entry.isDirectory()) walk(path);
+      else files.push(path);
+    }
+  };
+  walk('static');
+  assert.ok(files.length >= 10, 'the scan should find the static assets, found ' + files.length);
+  const ignored = files.filter((file) => !parked.has(file) && isIgnored(file));
+  assert.deepEqual(ignored, [], 'these assets build locally but would be missing on the host');
 });

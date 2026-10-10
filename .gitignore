@@ -7,4 +7,8 @@ build
 .env.*
 !.env.example
 .DS_Store
+# screenshots and one-off images stay out of git, site assets do not
 *.png
+!static/**/*.png
+# parked legacy logo: never referenced again (see summary.md), kept on disk only
+static/images/xiaozhe-logo.png
