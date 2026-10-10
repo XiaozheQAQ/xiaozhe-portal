@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { useI18n } from '#lib/i18n';
   import { courses, statusServices, getScheduleDetails, semesterInfo, type RoomGuide } from '#lib/status/schedule';
+  import MaimaiArchive from '#lib/features/maimai/MaimaiArchive.svelte';
 
   type CheckState = 'checking' | 'healthy' | 'unhealthy' | 'unconfigured';
   type Check = { state: CheckState; responseTime?: number; checkedAt?: Date };
@@ -298,6 +299,14 @@
     <p class="schedule-footer-meta">
       <i class="ri-book-open-line" aria-hidden="true"></i> {i18n.t('status.academicMeta')} · {semesterInfo.class} · {i18n.t('status.creditNotice')}
     </p>
+  </section>
+
+  <section class="status-section maimai-section">
+    <div class="status-section-heading">
+      <p class="eyebrow"><i class="ri-gamepad-line" aria-hidden="true"></i> {i18n.t('maimai.section')}</p>
+      <p class="status-section-description">{i18n.t('maimai.sectionDescription')}</p>
+    </div>
+    <MaimaiArchive />
   </section>
 
   <section class="status-section website-status-section">

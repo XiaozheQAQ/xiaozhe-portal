@@ -328,8 +328,12 @@ test('everything that must be legible uses the ink twin, never the display accen
      non-text parts) the moment a yellow-green swatch is chosen. */
   const CRITICAL =
     /(?:^|[\s;{])(color|border-color|border|border-left|border-right|border-top|border-top-color|border-bottom-color|outline|outline-color|fill|stroke)\s*:\s*[^;{}]*var\(--accent\)\s*[;}]/;
+  /* One documented exception: the trend chart's area fill is decoration sitting
+     under a line drawn with --accent-ink, so it carries no legible information. */
+  const DECORATIVE_FILLS = ['fill: var(--accent);'];
   for (const source of accentSurfaces) {
     for (const line of source.split('\n')) {
+      if (DECORATIVE_FILLS.some((allowed) => line.includes(allowed))) continue;
       assert.ok(!CRITICAL.test(line), 'the display accent cannot carry text or borders: ' + line.trim().slice(0, 96));
       assert.ok(
         !/text-\[var\(--accent\)\]|border-\[var\(--accent\)\]/.test(line),

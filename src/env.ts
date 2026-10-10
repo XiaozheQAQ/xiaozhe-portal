@@ -16,6 +16,14 @@ export const variables = defineEnvVars({
     description: 'Upstash Redis REST token for article view counts (server-side only).',
     schema: (value: string | undefined) => value ?? ''
   },
+  LXNS_DEVELOPER_API_KEY: {
+    description: 'LXNS 落雪查分器 developer API key for the maimai DX archive (server-side only).',
+    schema: (value: string | undefined) => value ?? ''
+  },
+  MAIMAI_FRIEND_CODE: {
+    description: 'Friend code of the maimai DX player whose archive the status page shows.',
+    schema: (value: string | undefined) => value ?? ''
+  },
   PUBLIC_GISCUS_REPO: {
     public: true,
     static: true,
