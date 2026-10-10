@@ -3,17 +3,50 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Preloaded from a stable path: with font-display: block this removes the
+         window in which icon glyphs are not painted yet. -->
+    <link rel="preload" href="/fonts/remixicon.woff2" as="font" type="font/woff2" crossorigin />
     <script>
+      /*
+       * Pre-paint theme bootstrap: runs before the stylesheet and before any
+       * Svelte code, so the very first painted frame already carries the right
+       * theme. The client keeps the same rules in src/lib/theme/theme.ts, and
+       * tests/theme.test.js runs this exact script to prove the two still agree.
+       *
+       * localStorage is tri-state: an explicit 'light'/'dark' wins, absence of
+       * the key follows the system, and the legacy 'system' value (or anything
+       * unrecognised) is dropped so absence is what means "follow the system".
+       */
       (() => {
-        let preference = 'system';
+        const root = document.documentElement;
+        let explicit = null;
         try {
           const saved = localStorage.getItem('xiaozhe-theme');
-          if (saved === 'light' || saved === 'dark' || saved === 'system') preference = saved;
+          if (saved === 'light' || saved === 'dark') explicit = saved;
+          else if (saved !== null) localStorage.removeItem('xiaozhe-theme');
         } catch {}
-        const dark = preference === 'dark' || (preference === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
-        document.documentElement.classList.toggle('dark', dark);
-        document.documentElement.dataset.theme = preference;
-        document.documentElement.classList.add('theme-initializing');
+        const theme = explicit ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        root.classList.toggle('dark', theme === 'dark');
+        root.dataset.theme = theme;
+        root.dataset.themeSource = explicit ? 'explicit' : 'system';
+        /*
+         * The primary colour is pre-painted the same way: an explicit id wins,
+         * anything unrecognised is dropped so absence means the default. The id
+         * list must stay in step with src/lib/theme/accent.ts — the test suite
+         * runs this script and compares the two.
+         */
+        const accents = ['brand','violet','purple','magenta','rose','red','orange','amber','lime','green','emerald','teal','cyan','sky','blue','indigo'];
+        let accent = 'brand';
+        try {
+          const savedAccent = localStorage.getItem('xiaozhe-accent');
+          if (savedAccent !== null) {
+            if (accents.indexOf(savedAccent) !== -1) accent = savedAccent;
+            else localStorage.removeItem('xiaozhe-accent');
+          }
+        } catch {}
+        root.dataset.accent = accent;
+
+        root.classList.add('theme-initializing');
       })();
     </script>
     %sveltekit.head%

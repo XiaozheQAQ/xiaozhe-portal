@@ -41,7 +41,7 @@
     {#if data.post.data.language === 'zh-CN'}
       <div class="mt-5"><span class="content-language-badge">{i18n.t('content.chineseOnly')}</span></div>
     {/if}
-    <div class="mt-5 flex flex-wrap gap-2">{#each data.post.data.tags as tag}<span class="rounded-full bg-[var(--accent-soft)] px-2.5 py-1 text-[11px] text-[var(--accent)]">{tag}</span>{/each}</div>
+    <div class="mt-5 flex flex-wrap gap-2">{#each data.post.data.tags as tag}<span class="rounded-full bg-[var(--accent-soft)] px-2.5 py-1 text-[11px] text-[var(--accent-ink)]">{tag}</span>{/each}</div>
     <div class="article-meta-line">
       <span class="article-reading">{i18n.t('article.readingTime').replace('{minutes}', String(data.post.readingTime))} · {i18n.t('article.words').replace('{count}', String(data.post.wordCount))}</span>
       <ArticleEngagement slug={data.post.slug} />

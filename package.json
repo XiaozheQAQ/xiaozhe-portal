@@ -13,7 +13,10 @@
     "test:schedule": "node --test --experimental-strip-types tests/schedule.test.js",
     "test:images": "node --test --experimental-strip-types tests/image-dimensions.test.js",
     "test:content": "node --test --experimental-strip-types tests/reading-stats.test.js",
-    "test:engagement": "node --test --experimental-strip-types tests/engagement.test.js"
+    "test:engagement": "node --test --experimental-strip-types tests/engagement.test.js",
+    "test:theme": "node --test --experimental-strip-types tests/theme.test.js",
+    "test:accent": "node --test --experimental-strip-types tests/accent.test.js",
+    "test:icons": "node --test --experimental-strip-types tests/icons.test.js"
   },
   "devDependencies": {
     "@sveltejs/adapter-vercel": "^7.0.0",

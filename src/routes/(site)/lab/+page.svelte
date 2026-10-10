@@ -37,13 +37,13 @@
                 <span class="lab-card-status">{i18n.t(group.key)}</span>
                 {#if item.data.date}<time>{item.data.date}</time>{/if}
               </div>
-              <h2 class="lab-card-title group-hover:text-[var(--accent)]">{item.data.title}</h2>
+              <h2 class="lab-card-title group-hover:text-[var(--accent-ink)]">{item.data.title}</h2>
               <p class="lab-card-description">{item.data.description}</p>
               {#if item.data.tags.length}
                 <div class="lab-card-tags">{#each item.data.tags as tag}<span>{tag}</span>{/each}</div>
               {/if}
             </div>
-            <i class="ri-arrow-right-line text-[var(--accent)]" aria-hidden="true"></i>
+            <i class="ri-arrow-right-line text-[var(--accent-ink)]" aria-hidden="true"></i>
           </a>
         {/each}
       </div>

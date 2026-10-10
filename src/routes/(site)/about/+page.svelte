@@ -61,7 +61,7 @@
     },
     {
       index: '03',
-      icon: 'ri-cloud-wind-line',
+      icon: 'ri-cloud-windy-line',
       titleZh: '网络与边缘计算',
       titleEn: 'Networking & Edge',
       tag: 'Linux · HTTP · Edge',
