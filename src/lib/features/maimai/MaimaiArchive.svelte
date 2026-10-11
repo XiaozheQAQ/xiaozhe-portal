@@ -80,7 +80,14 @@
 
   {#if phase === 'loading' && !archive}
     <div class="maimai-skeleton" aria-hidden="true">
-      <span></span><span></span><span></span><span></span>
+      {#each [0, 1, 2, 3] as row (row)}
+        <span class="maimai-skeleton-row">
+          <b class="maimai-skeleton-rank"></b>
+          <b class="maimai-skeleton-cover"></b>
+          <b class="maimai-skeleton-line"></b>
+          <b class="maimai-skeleton-figure"></b>
+        </span>
+      {/each}
     </div>
     <p class="maimai-loading">
       <i class="ri-loader-4-line maimai-spin" aria-hidden="true"></i> {i18n.t('maimai.loading')}

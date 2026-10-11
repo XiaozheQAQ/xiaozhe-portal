@@ -179,6 +179,20 @@ html.theme-revealing *, html.theme-revealing *::before, html.theme-revealing *::
   mix-blend-mode: normal;
   animation: theme-reveal 520ms cubic-bezier(.22, .68, .31, 1) both;
 }
+/* The header is the one element that has to hold still through an appearance
+   change. It is sticky, so a wipe that re-composited it could paint it back at
+   the top of the document - off screen once the page is scrolled - and it would
+   drop out of the transition until the animation ended, which is what makes it
+   blink on a phone. Naming it gives it its own snapshot, pinned where the reader
+   sees it and drawn above the wipe, already in the new theme. Its own two images
+   never cross-fade: a bar that blinks is worse than a bar that changes at once. */
+.site-header { view-transition-name: site-header; }
+::view-transition-group(site-header) { z-index: 3; }
+::view-transition-old(site-header),
+::view-transition-new(site-header) {
+  mix-blend-mode: normal;
+  animation: none;
+}
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }
@@ -1206,11 +1220,18 @@ html.dark .theme-button .theme-icon-dark { display: inline-flex; }
 .maimai-retry:disabled { cursor: wait; opacity: .7; }
 
 .maimai-skeleton { display: grid; gap: 12px; }
-/* The shimmer sweeps a gradient across the placeholder instead of moving the
-   placeholder's own background: a transform-only animation runs off the main
-   thread, so a loading list no longer competes with the page around it. */
-.maimai-skeleton span { position: relative; display: block; height: 74px; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--surface) 86%, var(--bg)); }
-.maimai-skeleton span::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--surface) 58%, var(--bg)), transparent); transform: translateX(-100%); animation: maimai-shimmer 1.5s ease-in-out infinite; }
+/* The placeholder is shaped like the score rows it stands in for - rank, cover,
+   title line, figures - so the list does not jump when the real rows arrive.
+   The shimmer sweeps a gradient across the box instead of moving the box's own
+   background: a transform-only animation runs off the main thread, so a loading
+   list no longer competes with the page around it. */
+.maimai-skeleton-row { position: relative; display: grid; grid-template-columns: 2.4ch 46px minmax(0, 1fr) 5.4rem; align-items: center; gap: 12px; height: 74px; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; padding: 0 12px; background: color-mix(in srgb, var(--surface) 86%, var(--bg)); }
+.maimai-skeleton-row::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--surface) 58%, var(--bg)), transparent); transform: translateX(-100%); animation: maimai-shimmer 1.5s ease-in-out infinite; }
+.maimai-skeleton-row > * { display: block; border-radius: 6px; background: color-mix(in srgb, var(--line) 34%, transparent); }
+.maimai-skeleton-row > .maimai-skeleton-rank { height: 10px; }
+.maimai-skeleton-row > .maimai-skeleton-cover { width: 46px; height: 46px; border-radius: 10px; }
+.maimai-skeleton-row > .maimai-skeleton-line { height: 12px; max-width: 72%; }
+.maimai-skeleton-row > .maimai-skeleton-figure { justify-self: end; width: 62%; height: 14px; }
 @keyframes maimai-shimmer { to { transform: translateX(100%); } }
 .maimai-loading { display: flex; align-items: center; gap: 7px; margin: 0; color: var(--muted); font-size: .78rem; }
 .maimai-spin { animation: status-spin .9s linear infinite; }
@@ -1257,6 +1278,16 @@ html.dark .theme-button .theme-icon-dark { display: inline-flex; }
 .maimai-jacket { position: relative; display: grid; width: 46px; height: 46px; place-items: center; overflow: hidden; border: 1px solid var(--line); border-radius: 9px; background: var(--accent-soft); }
 .maimai-jacket-fallback { color: var(--accent-ink); font-size: 1rem; }
 .maimai-jacket img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* A cover comes from the archive's asset host, so it can be slow: the square
+   spins a ring until the image lands and keeps the note behind it until then.
+   `data-state` is set by MaimaiJacket.svelte; with no script the attribute is
+   absent, the image is simply visible, and nothing here applies. */
+.maimai-jacket[data-state='loading'] img { opacity: 0; }
+.maimai-jacket[data-state='ready'] img { opacity: 1; transition: opacity .2s ease; }
+.maimai-jacket[data-state='loading'] .maimai-jacket-fallback { visibility: hidden; }
+.maimai-jacket[data-state='failed'] img { display: none; }
+.maimai-jacket-ring { position: absolute; inset: 0; display: none; width: 18px; height: 18px; margin: auto; border: 2px solid color-mix(in srgb, var(--line) 78%, var(--muted)); border-top-color: var(--accent-ink); border-radius: 50%; pointer-events: none; animation: progressive-spin .75s linear infinite; }
+.maimai-jacket[data-state='loading'] .maimai-jacket-ring { display: block; }
 .maimai-score-main { display: grid; gap: 4px; min-width: 0; }
 .maimai-score-title { margin: 0; overflow: hidden; font-size: .82rem; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
 .maimai-score-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin: 0; }
@@ -1339,9 +1370,12 @@ html.dark .theme-button .theme-icon-dark { display: inline-flex; }
   .maimai-score { grid-template-columns: 1.8ch 40px minmax(0, 1fr); gap: 8px; padding: 8px 10px; }
   .maimai-score[data-variant='recent'] { grid-template-columns: 40px minmax(0, 1fr); }
   .maimai-jacket { width: 40px; height: 40px; border-radius: 8px; }
+  .maimai-skeleton-row { grid-template-columns: 1.8ch 40px minmax(0, 1fr); gap: 8px; padding: 0 10px; }
+  .maimai-skeleton-row > .maimai-skeleton-cover { width: 40px; height: 40px; border-radius: 8px; }
+  .maimai-skeleton-row > .maimai-skeleton-figure { display: none; }
   .maimai-score-sub { gap: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .maimai-skeleton span, .maimai-spin { animation: none; }
+  .maimai-skeleton-row::after, .maimai-spin, .maimai-jacket-ring { animation: none; }
 }
 

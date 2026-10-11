@@ -1,6 +1,7 @@
 <script lang="ts">
   import { useI18n } from '#lib/i18n';
   import type { MaimaiScore } from '#lib/maimai/types';
+  import MaimaiJacket from '#lib/features/maimai/MaimaiJacket.svelte';
   import {
     comboLabel,
     difficultyLabel,
@@ -65,18 +66,7 @@
         <span class="maimai-score-rank">{index + 1}</span>
       {/if}
 
-      <span class="maimai-jacket">
-        <i class="ri-music-2-line maimai-jacket-fallback" aria-hidden="true"></i>
-        {#if score.jacketUrl}
-          <img
-            src={score.jacketUrl}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            onerror={(event) => ((event.currentTarget as HTMLImageElement).style.visibility = 'hidden')}
-          />
-        {/if}
-      </span>
+      <MaimaiJacket src={score.jacketUrl} />
 
       <div class="maimai-score-main">
         <p class="maimai-score-title" title={songName}>{songName}</p>
