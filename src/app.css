@@ -184,17 +184,26 @@ html.theme-revealing *, html.theme-revealing *::before, html.theme-revealing *::
    the top of the document - off screen once the page is scrolled - and it would
    drop out of the transition until the animation ended, which is what makes it
    blink on a phone. Naming it gives it its own snapshot, pinned where the reader
-   sees it and drawn above the wipe, already in the new theme. Its own two images
-   never cross-fade: a bar that blinks is worse than a bar that changes at once. */
+   sees it, so the wipe cannot lose it.
+   Its new image is then revealed by that same wipe - same origin, same duration,
+   same curve as the root - so the bar changes colour with the page. Letting it
+   snap instead is what makes the header flash a whole theme ahead of everything
+   else. The old image sits underneath and never animates. */
 .site-header { view-transition-name: site-header; }
 ::view-transition-group(site-header) { z-index: 3; }
-::view-transition-old(site-header),
-::view-transition-new(site-header) {
+::view-transition-old(site-header) {
+  z-index: 1;
   mix-blend-mode: normal;
   animation: none;
 }
+::view-transition-new(site-header) {
+  z-index: 2;
+  mix-blend-mode: normal;
+  animation: theme-reveal 520ms cubic-bezier(.22, .68, .31, 1) both;
+}
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+  ::view-transition-old(root), ::view-transition-new(root),
+  ::view-transition-old(site-header), ::view-transition-new(site-header) { animation: none; }
 }
 /* Mobile must never pan sideways. The header is built to fit at 320px; this is
    the backstop that keeps any stray wide child from becoming an x-scroll.
