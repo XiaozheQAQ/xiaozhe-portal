@@ -15,6 +15,24 @@
         <a href="/feed.xml" class="hover:text-[var(--text)]">{i18n.t('footer.rss')}</a>
       </div>
       <div class="mt-3">© 2026 Xiaozhe</div>
+      <a
+        class="group mt-2.5 inline-flex items-center gap-1.5 text-xs leading-none tracking-[0.02em] transition-colors hover:text-[var(--text)]"
+        href="https://beian.miit.gov.cn/"
+        target="_blank"
+        rel="noreferrer"
+        title={i18n.t('footer.icpTitle')}
+      >
+        <img
+          class="h-4 w-4 shrink-0 rounded-[3px] opacity-70 transition-opacity duration-200 group-hover:opacity-100"
+          src="/miit.ico"
+          alt=""
+          width="16"
+          height="16"
+          loading="lazy"
+          decoding="async"
+        />
+        <span>皖ICP备2026035559号-1</span>
+      </a>
     </div>
   </div>
 </footer>
