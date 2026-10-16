@@ -1,13 +1,17 @@
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
-import adapter from '@sveltejs/adapter-vercel';
+import vercel from '@sveltejs/adapter-vercel';
+import edgeone from './adapters/edgeone.js';
 
-export default defineConfig({
+// The default build targets Vercel exactly as before; `vite build --mode edgeone`
+// selects the adapter EdgeOne Makers documents for SvelteKit (see edgeone.json and
+// https://pages.edgeone.ai/document/framework-sveltekit).
+export default defineConfig(({ mode }) => ({
   plugins: [
     tailwindcss(),
     sveltekit({
-      adapter: adapter({ runtime: 'nodejs24.x' })
+      adapter: mode === 'edgeone' ? edgeone() : vercel({ runtime: 'nodejs24.x' })
     })
   ],
   resolve: {
@@ -15,4 +19,4 @@ export default defineConfig({
       '#lib': new URL('./src/lib', import.meta.url).pathname
     }
   }
-});
+}));

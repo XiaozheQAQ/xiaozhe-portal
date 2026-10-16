@@ -5,9 +5,13 @@
   "engines": {
     "node": ">=22.17"
   },
+  "overrides": {
+    "@sveltejs/kit": "$@sveltejs/kit"
+  },
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
+    "build:edgeone": "vite build --mode edgeone",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "test:schedule": "node --test --experimental-strip-types tests/schedule.test.js",
@@ -21,9 +25,11 @@
     "test:seo": "node --test --experimental-strip-types tests/seo.test.js"
   },
   "devDependencies": {
+    "@edgeone/sveltekit": "^1.1.1",
     "@sveltejs/adapter-vercel": "^7.0.0",
-    "@sveltejs/kit": "^3.0.0",
+    "@sveltejs/kit": "3.0.1",
     "@tailwindcss/vite": "^4.3.0",
+    "@types/node": "^24.0.0",
     "svelte": "^5.57.1",
     "svelte-check": "^4.3.0",
     "tailwindcss": "^4.3.0",
