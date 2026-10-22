@@ -654,7 +654,7 @@ html.dark .theme-button .theme-icon-dark { display: inline-flex; }
 .blog-item-grid { min-width: 0; }
 .blog-item-grid.has-cover { grid-template-columns: minmax(180px, 30%) minmax(0, 1fr) auto; }
 .blog-item-grid:not(.has-cover) { grid-template-columns: minmax(0, 1fr) auto; }
-.blog-item.alternate .blog-item-grid.has-cover { grid-template-columns: auto minmax(180px, 30%) minmax(0, 1fr); }
+.blog-item.alternate .blog-item-grid.has-cover { grid-template-columns: auto minmax(0, 1fr) minmax(180px, 30%); }
 .blog-item.alternate .blog-item-cover { grid-column: 3; grid-row: 1; }
 .blog-item.alternate .blog-item-copy { grid-column: 2; grid-row: 1; }
 .blog-item.alternate .blog-item-grid > i { grid-column: 1; grid-row: 1; }
