@@ -457,6 +457,9 @@ body.image-viewer-open { overflow: hidden; }
 .prose {
   max-width: 760px;
   color: var(--text);
+  /* 长 URL / 长标识符（如 CVE 链接、$request_filename）在窄屏必须能折行，
+     否则会撑破文章容器并把固定 header 一起带偏。 */
+  overflow-wrap: break-word;
 }
 .prose h1, .prose h2, .prose h3 { position: relative; scroll-margin-top: 7rem; }
 .prose h1, .prose h2, .prose h3, .section-header h2, .hero-title { text-wrap: balance; }
