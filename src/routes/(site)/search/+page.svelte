@@ -2,7 +2,7 @@
   import Seo from '#lib/components/common/Seo.svelte';
   let { data } = $props();
   import { onMount } from 'svelte';
-  import { useI18n } from '#lib/i18n';
+  import { translate, useI18n } from '#lib/i18n';
   import { page } from '$app/state';
   const i18n = useI18n();
   const locale = i18n.locale;
@@ -11,7 +11,10 @@
     query = page.url.searchParams.get('q') ?? '';
   });
   let results = $derived(
-    data.items.filter((item) => `${item.title} ${item.description} ${item.keywords}`.toLowerCase().includes(query.toLowerCase().trim()))
+    data.items.filter((item) => {
+      const descriptions = typeof item.description === 'string' ? item.description : Object.values(item.description).join(' ');
+      return `${item.title} ${descriptions} ${item.keywords}`.toLowerCase().includes(query.toLowerCase().trim());
+    })
   );
 </script>
 
@@ -37,9 +40,11 @@
   {#if results.length}
     {#each results as item}
       <a href={item.href} class="group block border-b border-[var(--line)] py-5">
-        <div class="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent-ink)]">{i18n.t(item.type)}</div>
+        <div class="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent-ink)]">{translate($locale, item.type)}</div>
         <h2 class="mt-2 text-lg font-medium group-hover:text-[var(--accent-ink)]">{item.title}</h2>
-        <p class="mt-1 text-sm text-[var(--muted)]">{item.description}</p>
+        <p class="mt-1 text-sm text-[var(--muted)]">
+          {typeof item.description === 'string' ? item.description : item.description[$locale]}
+        </p>
       </a>
     {/each}
   {:else}

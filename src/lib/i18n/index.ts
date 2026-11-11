@@ -68,31 +68,31 @@ const dictionaries: Record<Locale, Dictionary> = {
     'page.about': '关于',
     'page.search': '搜索',
     'page.blogDescription': '最近写下的一些东西，关于 Web、AI、系统，以及还在学习的内容。',
-    'page.labDescription': '还在折腾，偶尔成功，偶尔不太成功。',
+    'page.labDescription': '这里收录个人项目，点击卡片即可查看 GitHub 仓库。',
     'page.statusDescription': '当前的个人状态，以及从访问环境发起的即时网站探测。',
   'page.homeDescription': '小哲的个人站点：关于 Web、AI 与系统的写作、实验，以及实时的状态快照。',
   'page.aboutDescription': '关于小哲：正在做的事情、常用的工具，以及平时关注的方向。',
-  'page.searchDescription': '搜索站内的文章、实验室记录与页面。',
+  'page.searchDescription': '搜索文章和实验室项目。',
   'page.offlineDescription': '当前处于离线状态，网络恢复后即可继续浏览。',
   'page.offline': '离线',
   'page.offlineTitle': '网络暂时不可用',
   'page.offlineRetry': '重新加载',
     'page.statusEyebrow': '即时快照',
     'page.aboutTitle': '关于我自己',
-    'search.placeholder': '搜索文章和实验室内容',
-    'search.label': '搜索文章和实验室内容',
+    'search.placeholder': '搜索文章和项目',
+    'search.label': '搜索文章和项目',
     'search.empty': '没有找到匹配内容。',
     'search.blogPlaceholder': '搜索文章标题、内容或标签…',
     'search.blogEmpty': '没有找到匹配的文章。',
     'search.blogCount': '共 {count} 篇文章',
     'search.blog': '文章',
-    'search.lab': '实验室',
+    'search.lab': '项目',
+    'lab.maintenance.title': '维护项目',
+    'lab.maintenance.description': '已有可用版本。',
+    'lab.development.title': '开发项目',
+    'lab.development.description': '仍在开发，尚无成品版本。',
     'lab.researching': '研究中',
     'lab.done': '已完成',
-    'lab.count': '个条目',
-    'lab.empty': '这个分组还没有内容。',
-    'lab.completedJump': '查看已完成',
-    'lab.eyebrow': '实验、记录，以及还没回答的问题',
     'lab.record': '记录',
     'lab.projectRecord': '项目记录',
     'lab.experimentNote': '实验记录',
@@ -341,31 +341,31 @@ const dictionaries: Record<Locale, Dictionary> = {
     'page.about': 'About',
     'page.search': 'Search',
     'page.blogDescription': 'Notes about the web, AI, systems, and things I am still learning.',
-    'page.labDescription': 'Experiments, half-finished ideas, and the occasional useful accident.',
+    'page.labDescription': 'A collection of personal projects. Open any card to visit its GitHub repository.',
     'page.statusDescription': 'A personal snapshot and lightweight checks from the current browsing environment.',
   'page.homeDescription': 'The personal portal of Xiaozhe: writing about the web, AI and systems, plus a live status snapshot.',
   'page.aboutDescription': 'About Xiaozhe: the work in progress, the tools in use, and the topics worth following.',
-  'page.searchDescription': 'Search the writing, lab notes and pages on this site.',
+  'page.searchDescription': 'Search articles and lab projects.',
   'page.offlineDescription': 'This device is offline right now. The page will work again once the network is back.',
   'page.offline': 'Offline',
   'page.offlineTitle': 'The network is out of reach',
   'page.offlineRetry': 'Reload',
     'page.statusEyebrow': 'Live snapshot',
     'page.aboutTitle': 'About Myself',
-    'search.placeholder': 'Search writing and lab entries',
-    'search.label': 'Search writing and lab entries',
+    'search.placeholder': 'Search articles and projects',
+    'search.label': 'Search articles and projects',
     'search.empty': 'No matching content.',
     'search.blogPlaceholder': 'Search articles by title, content, or tags…',
     'search.blogEmpty': 'No matching articles.',
     'search.blogCount': '{count} articles',
     'search.blog': 'Blog',
-    'search.lab': 'Lab',
+    'search.lab': 'Project',
+    'lab.maintenance.title': 'Maintained Projects',
+    'lab.maintenance.description': 'Projects with a usable version.',
+    'lab.development.title': 'Projects in Development',
+    'lab.development.description': 'Still in development, with a finished version pending.',
     'lab.researching': 'Researching',
     'lab.done': 'Done',
-    'lab.count': 'entries',
-    'lab.empty': 'There is nothing in this group yet.',
-    'lab.completedJump': 'View completed',
-    'lab.eyebrow': 'Experiments, notes, and unfinished questions',
     'lab.record': 'record',
     'lab.projectRecord': 'Project record',
     'lab.experimentNote': 'Experiment note',
@@ -561,6 +561,10 @@ export type I18nContext = {
   t: (key: string) => string;
 };
 
+export function translate(locale: Locale, key: string) {
+  return dictionaries[locale][key] ?? dictionaries.en[key] ?? key;
+}
+
 export function createI18n() {
   const locale = writable<Locale>('zh-CN');
   const context: I18nContext = {
@@ -575,7 +579,7 @@ export function createI18n() {
       let current: Locale = 'zh-CN';
       const unsubscribe = locale.subscribe((value) => (current = value));
       unsubscribe();
-      return dictionaries[current][key] ?? dictionaries.en[key] ?? key;
+      return translate(current, key);
     }
   };
   setContext('i18n', context);

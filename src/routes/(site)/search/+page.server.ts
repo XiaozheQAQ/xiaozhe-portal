@@ -1,5 +1,5 @@
 import { getPosts } from '#lib/content/blog';
-import { getLabEntries } from '#lib/content/lab';
+import { labProjects, projectUrl } from '#lib/features/lab/projects';
 
 export function load() {
   return {
@@ -12,12 +12,12 @@ export function load() {
         description: item.data.description,
         keywords: [...item.data.tags, item.data.category ?? ''].join(' ')
       })),
-      ...getLabEntries().map((item) => ({
+      ...labProjects.map((project) => ({
         type: 'search.lab',
-        href: `/lab/${item.slug}`,
-        title: item.data.title,
-        description: item.data.description,
-        keywords: [...item.data.tags, item.data.status].join(' ')
+        href: projectUrl(project),
+        title: project.title,
+        description: project.description,
+        keywords: [project.repository, project.status, ...project.tech].join(' ')
       }))
     ]
   };

@@ -4,6 +4,7 @@
   import SectionHeader from '#lib/components/common/SectionHeader.svelte';
   import PostItem from '#lib/features/blog/PostItem.svelte';
   import LabItem from '#lib/features/lab/LabItem.svelte';
+  import { labProjects } from '#lib/features/lab/projects';
   import { useI18n } from '#lib/i18n';
   import SearchBox from '#lib/components/common/SearchBox.svelte';
   import { friendLinks } from '#lib/friends/links';
@@ -68,7 +69,11 @@
 
 <section class="content-section">
   <SectionHeader title={i18n.t('section.lab')} icon="ri-flask-line" href="/lab" action={i18n.t('section.viewAll')} />
-  <div class="grid gap-2 md:grid-cols-3">{#each data.labs as item}<LabItem {item} />{/each}</div>
+  <div class="lab-project-grid lab-project-grid-home">
+    {#each labProjects.slice(0, 3) as project (project.repository)}
+      <LabItem {project} />
+    {/each}
+  </div>
 </section>
 
 <section class="content-section" id="friends">

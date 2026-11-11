@@ -1,5 +1,9 @@
 import { error } from '@sveltejs/kit';
-import { getLab } from '#lib/content/lab';
+import { getLab, getLabEntries } from '#lib/content/lab';
+
+export function entries() {
+  return getLabEntries().map(({ slug }) => ({ slug }));
+}
 
 export function load({ params }) {
   const lab = getLab(params.slug);

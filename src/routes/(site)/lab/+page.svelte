@@ -1,59 +1,45 @@
 <script lang="ts">
   import Seo from '#lib/components/common/Seo.svelte';
   import LabItem from '#lib/features/lab/LabItem.svelte';
-  import { useI18n } from '#lib/i18n';
-  let { data } = $props();
-  const i18n = useI18n();
-  const locale = i18n.locale;
+  import { labProjects } from '#lib/features/lab/projects';
+  import { translate, useI18n } from '#lib/i18n';
+
+  const { locale } = useI18n();
+  const title = $derived(translate($locale, 'page.lab'));
+  const description = $derived(translate($locale, 'page.labDescription'));
   const groups = [
-    { id: 'researching', key: 'lab.researching' },
-    { id: 'done', key: 'lab.done' }
+    { status: 'maintenance', anchor: 'done', icon: 'ri-checkbox-circle-line' },
+    { status: 'development', anchor: 'researching', icon: 'ri-hammer-line' }
   ];
 </script>
 
 <Seo
-  title={`${i18n.t('page.lab')} — Xiaozhe`}
-  description={i18n.t('page.labDescription')}
+  title={`${title} — Xiaozhe`}
+  description={description}
   path="/lab"
 />
 
-<section class="pb-2 pt-5 lg:pt-7" data-locale={$locale}>
-  <p class="eyebrow page-kicker">{i18n.t('lab.eyebrow')}</p>
-  <h1 class="mt-3 text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">{i18n.t('page.lab')}</h1>
-  <p class="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">{i18n.t('page.labDescription')}</p>
-</section>
+<div class="lab-showcase">
+  <header class="lab-intro">
+    <h1>{title}</h1>
+    <p>{description}</p>
+  </header>
 
-{#each groups as group}
-  {@const items = data.labs.filter((item) => item.data.status === group.id)}
-  <section id={group.id} class="lab-group">
-    <div class="lab-group-heading">
-      <div>
-        <p class="eyebrow"><i class={group.id === 'researching' ? 'ri-flask-line' : 'ri-checkbox-circle-line'} aria-hidden="true"></i> {i18n.t(group.key)}</p>
-        <p class="lab-group-count">{items.length} {i18n.t('lab.count')}</p>
-      </div>
-    </div>
-    {#if items.length}
-      <div class="lab-index">
-        {#each items as item, index}
-          <a class="lab-card group" href={`/lab/${item.slug}`}>
-            <span class="lab-card-index">{String(index + 1).padStart(2, '0')}</span>
-            <div>
-              <div class="lab-card-meta">
-                <span class="lab-card-status">{i18n.t(group.key)}</span>
-                {#if item.data.date}<time>{item.data.date}</time>{/if}
-              </div>
-              <h2 class="lab-card-title group-hover:text-[var(--accent-ink)]">{item.data.title}</h2>
-              <p class="lab-card-description">{item.data.description}</p>
-              {#if item.data.tags.length}
-                <div class="lab-card-tags">{#each item.data.tags as tag}<span>{tag}</span>{/each}</div>
-              {/if}
-            </div>
-            <i class="ri-arrow-right-line text-[var(--accent-ink)]" aria-hidden="true"></i>
-          </a>
+  {#each groups as group (group.status)}
+    {@const projects = labProjects.filter((project) => project.status === group.status)}
+    <section id={group.anchor} class="lab-group" aria-labelledby={`lab-${group.status}`}>
+      <header class="lab-group-heading">
+        <h2 id={`lab-${group.status}`}>
+          <i class={group.icon} aria-hidden="true"></i>
+          {translate($locale, `lab.${group.status}.title`)}
+        </h2>
+        <p>{translate($locale, `lab.${group.status}.description`)}</p>
+      </header>
+      <div class="lab-project-grid">
+        {#each projects as project (project.repository)}
+          <LabItem {project} />
         {/each}
       </div>
-    {:else}
-      <p class="lab-empty">{i18n.t('lab.empty')}</p>
-    {/if}
-  </section>
-{/each}
+    </section>
+  {/each}
+</div>
