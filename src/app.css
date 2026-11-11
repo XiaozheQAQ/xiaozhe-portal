@@ -749,8 +749,8 @@ html.dark .theme-button .theme-icon-dark { display: inline-flex; }
   overflow-wrap: anywhere;
 }
 .lab-project p { margin-top: 6px; color: var(--muted); font-size: .84rem; line-height: 1.6; }
-.lab-project-tech { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding: 12px 0; }
-.lab-project-tech li {
+.lab-project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding: 12px 0; }
+.lab-project-tags li {
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: 2px 7px;
@@ -758,17 +758,17 @@ html.dark .theme-button .theme-icon-dark { display: inline-flex; }
   color: var(--muted);
   font: .68rem/1.5 var(--font-mono);
 }
-.lab-project-repo {
+.lab-project-link {
   display: flex;
   align-items: baseline;
   gap: 7px;
   border-top: 1px solid var(--line);
   padding-top: 10px;
   color: var(--muted);
-  font: .68rem/1.45 var(--font-mono);
+  font: .75rem/1.45 var(--font-sans);
   overflow-wrap: anywhere;
 }
-.lab-project-repo i { font-size: .95rem; }
+.lab-project-link i { font-size: .95rem; }
 @media (max-width: 1000px) {
   .lab-project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

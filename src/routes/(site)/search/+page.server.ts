@@ -1,5 +1,5 @@
 import { getPosts } from '#lib/content/blog';
-import { labProjects, projectUrl } from '#lib/features/lab/projects';
+import { labProjects } from '#lib/features/lab/projects';
 
 export function load() {
   return {
@@ -14,10 +14,10 @@ export function load() {
       })),
       ...labProjects.map((project) => ({
         type: 'search.lab',
-        href: projectUrl(project),
+        href: project.url,
         title: project.title,
         description: project.description,
-        keywords: [project.repository, project.status, ...project.tech].join(' ')
+        keywords: [project.title.replace(/\s+/g, ''), project.url, project.linkType, project.status, ...project.tags].join(' ')
       }))
     ]
   };

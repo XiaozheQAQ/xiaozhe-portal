@@ -70,7 +70,7 @@
 <section class="content-section">
   <SectionHeader title={i18n.t('section.lab')} icon="ri-flask-line" href="/lab" action={i18n.t('section.viewAll')} />
   <div class="lab-project-grid lab-project-grid-home">
-    {#each labProjects.slice(0, 3) as project (project.repository)}
+    {#each labProjects.slice(0, 3) as project (project.url)}
       <LabItem {project} />
     {/each}
   </div>

@@ -36,7 +36,7 @@
         <p>{translate($locale, `lab.${group.status}.description`)}</p>
       </header>
       <div class="lab-project-grid">
-        {#each projects as project (project.repository)}
+        {#each projects as project (project.url)}
           <LabItem {project} />
         {/each}
       </div>
