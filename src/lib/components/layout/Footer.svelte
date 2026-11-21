@@ -1,6 +1,38 @@
 <script lang="ts">
-  import { useI18n } from '#lib/i18n';
+  import { onMount } from 'svelte';
+  import { translate, useI18n } from '#lib/i18n';
+  import { footerTips, type FooterTip } from '#lib/config/footer-tips';
+
   const i18n = useI18n();
+  const locale = i18n.locale;
+  let tip = $state<FooterTip>(footerTips[0]);
+  let now = $state<Date | null>(null);
+
+  // Pick once per visit; the server renders the first entry so hydration has
+  // something stable to compare against.
+  onMount(() => {
+    tip = footerTips[Math.floor(Math.random() * footerTips.length)];
+  });
+
+  // Only run the clock while the time entry is the one on screen.
+  $effect(() => {
+    if (tip.kind !== 'time') return;
+    now = new Date();
+    const timer = window.setInterval(() => {
+      now = new Date();
+    }, 1000);
+    return () => window.clearInterval(timer);
+  });
+
+  const timeFormatter = $derived(
+    new Intl.DateTimeFormat($locale === 'en' ? 'en-GB' : 'zh-CN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hourCycle: 'h23'
+    })
+  );
+  const timeText = $derived(now ? timeFormatter.format(now) : '--:--:--');
 </script>
 
 <footer class="border-t border-[var(--line)] px-5 py-8 sm:px-8 lg:px-10" data-locale={$i18n}>
@@ -27,7 +59,7 @@
           <span>皖ICP备2026035559号-1</span>
         </a>
       </div>
-      <p class="mt-2 max-w-[52ch] text-sm text-[var(--muted)]">{i18n.t('footer.tagline')}</p>
+      <p class="mt-2 max-w-[52ch] text-sm text-[var(--muted)]"><span class="font-mono text-[var(--accent-ink)]">{translate($locale, 'footer.tipsLabel')}</span>{#if tip.kind === 'time'}{translate($locale, 'footer.tipsTime')}<span class="tabular-nums">{timeText}</span>{:else}{tip.text[$locale]}{/if}</p>
     </div>
     <div class="flex shrink-0 flex-col gap-2 text-sm text-[var(--muted)] sm:items-end">
       <div class="flex gap-4">
