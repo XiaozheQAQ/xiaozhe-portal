@@ -11,7 +11,7 @@
   };
 </script>
 
-<a class="lab-project" class:in-development={project.status === 'development'} href={project.url}>
+<a class="lab-project" class:in-development={project.status === 'development'} href={project.url} target="_blank" rel="noreferrer">
   <div class="lab-project-top">
     <span class="lab-project-icon"><i class={project.icon} aria-hidden="true"></i></span>
     <span class="lab-project-arrow"><i class="ri-arrow-right-up-line" aria-hidden="true"></i></span>

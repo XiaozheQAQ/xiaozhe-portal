@@ -48,6 +48,42 @@ export const labProjects: readonly LabProject[] = [
     icon: 'ri-window-line'
   },
   {
+    url: 'https://github.com/XiaozheQAQ/Enable-RDP',
+    linkType: 'repository',
+    status: 'maintenance',
+    title: 'RDP-QuickAccess',
+    description: {
+      'zh-CN': 'Windows 10/11 局域网 RDP 一键配置、状态检查与生命周期管理工具，支持账户轮换、防火墙规则和快照恢复。',
+      en: 'A one-click RDP setup, status check, and lifecycle tool for Windows 10/11 LANs, with account rotation, firewall rules, and snapshot restore.'
+    },
+    tags: ['PowerShell', 'Windows', 'RDP'],
+    icon: 'ri-computer-line'
+  },
+  {
+    url: 'https://github.com/XiaozheQAQ/proxy-tui',
+    linkType: 'repository',
+    status: 'maintenance',
+    title: 'ProxyTUI',
+    description: {
+      'zh-CN': '面向 Windows、Linux 和 macOS 的终端代理客户端，封装 Mihomo 与 sing-box，支持订阅导入、节点切换和系统代理接管。',
+      en: 'A terminal-native proxy client for Windows, Linux, and macOS that wraps Mihomo and sing-box, with subscription import, node switching, and system proxy takeover.'
+    },
+    tags: ['Go', 'TUI', 'Proxy'],
+    icon: 'ri-terminal-box-line'
+  },
+  {
+    url: 'https://github.com/XiaozheQAQ/HS2',
+    linkType: 'repository',
+    status: 'maintenance',
+    title: 'Homework Sentinel',
+    description: {
+      'zh-CN': '本地优先的作业通知整理工具：把教学应用通知收进收件箱，人工确认后转成带截止时间的作业清单。',
+      en: 'A local-first homework notification organizer: collect teaching-app notifications in an inbox, confirm them, and turn them into assignments with deadlines.'
+    },
+    tags: ['Android', 'Notifications', 'Local-first'],
+    icon: 'ri-smartphone-line'
+  },
+  {
     url: 'https://github.com/XiaozheQAQ/Learning-and-construct-platforms',
     linkType: 'repository',
     status: 'development',
