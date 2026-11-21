@@ -62,7 +62,7 @@ export const labProjects: readonly LabProject[] = [
   {
     url: 'https://github.com/XiaozheQAQ/proxy-tui',
     linkType: 'repository',
-    status: 'maintenance',
+    status: 'development',
     title: 'ProxyTUI',
     description: {
       'zh-CN': '面向 Windows、Linux 和 macOS 的终端代理客户端，封装 Mihomo 与 sing-box，支持订阅导入、节点切换和系统代理接管。',
