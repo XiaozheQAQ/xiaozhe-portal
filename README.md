@@ -1,5 +1,7 @@
 # Xiaozhe Portal
 
+**English** | [简体中文](README.zh-CN.md)
+
 A personal technical portal for Xiaozhe ([@XiaozheQAQ](https://github.com/XiaozheQAQ)) — writing, project showcases, a live status page, and a maimai DX score archive. Content is Markdown-driven and inlined at build time; there is no CMS, database, or external content source.
 
 Built with **SvelteKit 3 + Svelte 5 + TypeScript + Tailwind CSS 4**. Deploys to **Vercel** by default, with **Tencent EdgeOne Makers** as an optional second target.
