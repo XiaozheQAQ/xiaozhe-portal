@@ -8,6 +8,7 @@
   import { useI18n } from '#lib/i18n';
   import SearchBox from '#lib/components/common/SearchBox.svelte';
   import { friendLinks } from '#lib/friends/links';
+  import ContributionGraph from '#lib/features/github/ContributionGraph.svelte';
 
   let { data } = $props();
   const i18n = useI18n();
@@ -40,15 +41,7 @@
       <a class="button-secondary" href="/blog">{i18n.t('hero.ctaWriting')} <i class="ri-arrow-right-line" aria-hidden="true"></i></a>
     </div>
   </div>
-  <aside class="status-panel">
-    <div class="eyebrow">{i18n.t('hero.current')}</div>
-    <dl>
-      <div><dt>{i18n.t('hero.building')}</dt><dd>{i18n.t('hero.buildingValue')}</dd></div>
-      <div><dt>{i18n.t('hero.learning')}</dt><dd>{i18n.t('hero.learningValue')}</dd></div>
-      <div><dt>{i18n.t('hero.exploring')}</dt><dd>{i18n.t('hero.exploringValue')}</dd></div>
-    </dl>
-    <div class="mt-5 border-t border-[var(--line)] pt-4 font-mono text-[11px] text-[var(--muted)]">{i18n.t('hero.updated')}</div>
-  </aside>
+  <ContributionGraph />
 </section>
 
 <div class="now-line"><strong>Now</strong>{i18n.t('home.now')}</div>
