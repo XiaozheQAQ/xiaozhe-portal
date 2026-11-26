@@ -28,14 +28,15 @@ const OFFLINE_URL = '/offline';
  * small no matter how much the blog grows.
  */
 /* The bundler emits every RemixIcon format for the upstream @font-face rules,
-   but the site serves the woff2 it preloads itself. Pulling the eot, ttf, woff
-   and svg copies along would add megabytes to an install that must finish fast. */
-const LEGACY_FONT = /\/_app\/immutable\/assets\/remixicon\.[^/]+\.(eot|ttf|woff|svg)$/;
+   but the page only ever uses the woff2 it preloads from /fonts. Pulling any of
+   those _app copies (eot/ttf/woff/woff2/svg) into the install adds weight to an
+   install that must finish fast, so they are skipped in BOTH asset lists below. */
+const LEGACY_FONT = /\/_app\/immutable\/assets\/remixicon\.[^/]+\.(eot|ttf|woff2?|svg)$/;
 
 const absolute = (path: string) => (path.startsWith('/') ? path : '/' + path);
 const PRECACHE = [
   ...new Set([
-    ...immutable.map((entry) => absolute(entry.path)),
+    ...immutable.map((entry) => absolute(entry.path)).filter((path) => !LEGACY_FONT.test(path)),
     ...assets.map((entry) => absolute(entry.path)).filter((path) => !path.startsWith('/images/') && !LEGACY_FONT.test(path)),
     OFFLINE_URL
   ])
