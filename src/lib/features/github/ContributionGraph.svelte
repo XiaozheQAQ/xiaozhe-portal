@@ -61,15 +61,46 @@
 		};
 	}
 
-	onMount(async () => {
+	const UPSTREAM = 'https://github-contributions-api.jogruber.de/v4/XiaozheQAQ?y=last';
+
+	async function fetchData(): Promise<{ total: number; contributions: Cell[] } | null> {
+		// 1) Same-origin: the prerendered static JSON (or the runtime proxy).
 		try {
 			const res = await fetch('/api/contributions', { headers: { accept: 'application/json' } });
-			const data = await res.json();
-			if (!data?.available || !Array.isArray(data.contributions)) throw new Error('unavailable');
-			cells = data.contributions;
-			total = data.total ?? 0;
-			status = 'ready';
+			const data = (await res.json()) as {
+				available?: boolean;
+				total?: number;
+				contributions?: Cell[];
+			} | null;
+			if (data?.available && Array.isArray(data.contributions) && data.contributions.length) {
+				return { total: data.total ?? 0, contributions: data.contributions };
+			}
 		} catch {
+			/* fall through to the direct upstream */
+		}
+		// 2) Direct upstream (CORS-enabled) — covers a host that did not ship the route.
+		try {
+			const res = await fetch(UPSTREAM, { headers: { accept: 'application/json' } });
+			const data = (await res.json()) as {
+				total?: { lastYear?: number };
+				contributions?: Cell[];
+			} | null;
+			if (Array.isArray(data?.contributions) && data.contributions.length) {
+				return { total: data?.total?.lastYear ?? 0, contributions: data.contributions };
+			}
+		} catch {
+			/* unavailable */
+		}
+		return null;
+	}
+
+	onMount(async () => {
+		const result = await fetchData();
+		if (result) {
+			cells = result.contributions;
+			total = result.total;
+			status = 'ready';
+		} else {
 			status = 'error';
 		}
 	});

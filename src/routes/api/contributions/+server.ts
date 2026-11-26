@@ -12,7 +12,9 @@ import type { RequestHandler } from './$types';
  */
 const UPSTREAM = 'https://github-contributions-api.jogruber.de/v4/XiaozheQAQ?y=last';
 
-export const prerender = false;
+// Prerendered at build time into a static JSON file, so it works on any host
+// (Vercel / EdgeOne / plain static) without depending on a runtime function route.
+export const prerender = true;
 
 export const GET: RequestHandler = async ({ fetch, setHeaders }) => {
 	try {
