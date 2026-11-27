@@ -113,6 +113,7 @@
 
   function clearReveal(root: HTMLElement) {
     root.classList.remove('theme-revealing');
+    root.classList.remove('theme-revealing-reverse');
     root.style.removeProperty('--theme-reveal-x');
     root.style.removeProperty('--theme-reveal-y');
     root.style.removeProperty('--theme-reveal-r');
@@ -134,7 +135,7 @@
    * what is on screen. Browsers without the View Transitions API, and visitors
    * who asked for less motion, get the change at once.
    */
-  function withReveal(origin: RevealOrigin | null, apply: () => void) {
+  function withReveal(origin: RevealOrigin | null, apply: () => void, reverse = false) {
     const root = document.documentElement;
     const startViewTransition = (document as Document & {
       startViewTransition?: (callback: () => void) => ViewTransition;
@@ -179,6 +180,7 @@
     root.style.setProperty('--theme-reveal-r', `${Math.ceil(radius)}px`);
     root.classList.remove('appearance-fading');
     root.classList.add('theme-revealing');
+    root.classList.toggle('theme-revealing-reverse', reverse);
 
     const generation = (revealGeneration += 1);
     const cleanup = () => {
@@ -202,11 +204,11 @@
     }
   }
 
-  function commitTheme(next: ThemeName, origin: RevealOrigin | null) {
+  function commitTheme(next: ThemeName, origin: RevealOrigin | null, reverse = false) {
     persistPreference(next);
     withReveal(origin, () => {
       themePreference = next;
-    });
+    }, reverse);
   }
 
   /**
@@ -228,7 +230,12 @@
       themePreference = next;
       return;
     }
-    commitTheme(next, resolveRevealOrigin(event, centerOf(event?.currentTarget ?? null)));
+    // Night -> day retracts the circle into the switch button's centre; day -> night grows it out from the click point.
+    const reverse = theme === 'dark' && next === 'light';
+    const origin = reverse
+      ? centerOf(event?.currentTarget ?? null)
+      : resolveRevealOrigin(event, centerOf(event?.currentTarget ?? null));
+    commitTheme(next, origin, reverse);
   }
 
   function toggleTheme(event?: MouseEvent) {

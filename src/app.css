@@ -175,6 +175,23 @@ html.theme-revealing *, html.theme-revealing *::before, html.theme-revealing *::
   mix-blend-mode: normal;
   animation: theme-reveal 520ms cubic-bezier(.22, .68, .31, 1) both;
 }
+/* Day -> night grows the new theme out from the click point (rule above). Night ->
+   day runs the opposite way so the circle reads as being retracted: the outgoing
+   (dark) snapshot shrinks back into the click point, revealing the day theme
+   underneath. The extra .theme-revealing-reverse class is added per switch. */
+html.theme-revealing.theme-revealing-reverse::view-transition-old(root) {
+  z-index: 2;
+  mix-blend-mode: normal;
+  animation: theme-reveal-reverse 520ms cubic-bezier(.22, .68, .31, 1) both;
+}
+html.theme-revealing.theme-revealing-reverse::view-transition-new(root) {
+  z-index: 1;
+  animation: none;
+}
+@keyframes theme-reveal-reverse {
+  from { clip-path: circle(var(--theme-reveal-r, 150vmax) at var(--theme-reveal-x, 50%) var(--theme-reveal-y, 50%)); }
+  to { clip-path: circle(0px at var(--theme-reveal-x, 50%) var(--theme-reveal-y, 50%)); }
+}
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }

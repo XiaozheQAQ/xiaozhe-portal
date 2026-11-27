@@ -326,7 +326,7 @@ test('the layout owns the palette state and shares the reveal wipe', () => {
   assert.match(layout, /let accentPreference = \$state<AccentId \| null>\(client \? readStoredAccent\(\) : null\)/);
   assert.match(layout, /const accent = \$derived\(accentPreference \?\? DEFAULT_ACCENT\)/);
   assert.match(layout, /if \(event\.key === ACCENT_STORAGE_KEY\)/, 'other tabs sync the colour');
-  assert.match(layout, /function withReveal\(origin: RevealOrigin \| null, apply: \(\) => void\)/, 'one wipe for theme and colour');
+  assert.match(layout, /function withReveal\(origin: RevealOrigin \| null, apply: \(\) => void, reverse = false\)/, 'one wipe for theme and colour');
   assert.match(layout, /\{accent\} \{selectAccent\} \{toggleTheme\}/, 'both handlers reach the header');
 });
 
