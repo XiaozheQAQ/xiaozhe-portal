@@ -23,6 +23,8 @@ draft: false
 
 这篇文章是对那天上午的一次完整复盘。它不是一篇"删掉这个文件就好了"的教程，而是一次判断过程：一条告警怎么被追到两个文件、一张证书、一家公司；以及这一路上，我差点被自己骗过去的几个地方。
 
+![火绒安全日志：steam.exe 与 svchost.exe 访问仿冒域名已被拦截](/images/blog/signed-is-not-safe/huorong-alert.webp)
+
 > [!NOTE]
 > 文中所有恶意域名都已做去链接处理（`hxxp` + `[.]`），不会被误点；不会出现任何个人信息、样本文件或"入库工具"的操作方法。
 
@@ -128,6 +130,8 @@ Steam 自己有一套完整性清单（`steam.signatures`），官方文件都�
 
 安全软件对一个开源浏览器插件 `dsh-doyourweb`（MIT 协议，GitHub 公开仓库）里的 `lib/host.js` 报了"下载者木马"，一共 8 条——后来发现只是同一个文件在运行目录和依赖缓存里被重复计数。
 
+![火绒全盘查杀：dsh-doyourweb 被启发式误报为下载者木马](/images/blog/signed-is-not-safe/false-positive-scan.webp)
+
 我去核验了一遍：把上游同一个 commit 的源码包下下来，逐个比对已提交的文件，30 个里 29 个哈希完全一致，剩下 1 个是打包工具本来就会排除的 `.npmignore`。**文件没被改过。**
 
 那为什么会被判成木马？因为这段代码为了枚举窗口、读取图标、解压自带的扩展，用了 `-EncodedCommand` 加 base64 去调用系统命令，还用了 `ZipFile::ExtractToDirectory` 解压写盘。
@@ -138,6 +142,8 @@ Steam 自己有一套完整性清单（`steam.signatures`），官方文件都�
 > 遇到 JS 类告警，先看三件事：有没有 `eval` / `new Function` 这种运行时拼代码的混淆；它连接的地址是不是只有本机和已知服务；能不能和开源上游逐字节对上。
 
 还有第三类告警。清理完成之后，`WorkBuddy.exe` 又被报访问了那三个恶意域名。这一次的原因更"乌龙"：预览面板在渲染一段带超链接的 Markdown 时，Chromium 内核顺手对链接做了 DNS 预解析（提前把域名翻译成 IP，好让点击更快），并没有执行任何代码。
+
+![火绒日志：WorkBuddy.exe 触发 DNS 预解析误报](/images/blog/signed-is-not-safe/dns-prefetch.webp)
 
 判据也很简单：**看操作进程**。被注入的是 Steam，那么一旦复发，发起者必然是 Steam 相关的进程；如果弹出来的是文档查看器、浏览器、聊天客户端，先怀疑它是在解析你正文里出现的链接。
 
@@ -202,6 +208,8 @@ Steam 自己有一套完整性清单（`steam.signatures`），官方文件都�
 ## 九、后续：一封举报信，和一张被吊销的证书
 
 写完复盘的同一天，我向签发这张证书的 CA（GlobalSign）提交了一份滥用举报，附上样本哈希、签名主体画像与调查结论。
+
+![提交给 GlobalSign 的滥用举报邮件，个人信息已脱敏](/images/blog/signed-is-not-safe/abuse-report.webp)
 
 当天就收到了受理回执，工单号 **09022095**。CA 的核验结论写得很直白：
 
