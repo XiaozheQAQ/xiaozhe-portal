@@ -157,14 +157,10 @@ html.appearance-fading *:not(html):not(body)::after {
    repaints the largest surface on screen every frame for a difference nobody
    can see, so it lands on the new theme with the rest of the change. */
 html.appearance-fading body { transition: none !important; }
-/* A blurred bar recomputes its backdrop whenever what is behind it changes -
-   which, during an appearance change, is every frame. Dropping the blur for the
-   length of the change keeps the bar's own colour fade and removes that
-   per-frame work, which is what makes the header stutter on a phone. */
-html.appearance-fading .site-header,
-html.theme-revealing .site-header {
-  backdrop-filter: none;
-}
+/* The header keeps its blur for the whole appearance change. The circular
+   reveal plays on View Transitions snapshots (static bitmaps), so the blur is
+   never recomputed there; the cross-fade fallback is a short 0.45s fade. Holding
+   the blur steady avoids the clear-then-blur pop that dropping it would cause. */
 
 html.theme-revealing *, html.theme-revealing *::before, html.theme-revealing *::after {
   transition: none !important;
