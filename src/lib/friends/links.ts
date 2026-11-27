@@ -19,7 +19,7 @@ export type FriendLink = {
 export const friendLinks: FriendLink[] = [
   {
     name: 'Xiaocuitang',
-    url: 'https://iceawa.com/',
+    url: 'https://i.iceawa.com/',
     description: '豪姐妹x',
     icon: '/images/friends/xiaocuitang.webp'
   },
