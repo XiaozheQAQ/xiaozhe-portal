@@ -230,11 +230,10 @@
       themePreference = next;
       return;
     }
-    // Night -> day retracts the circle into the switch button's centre; day -> night grows it out from the click point.
+    // Both directions reveal from the theme button's centre, so the circle starts
+    // and stops at the same point regardless of where the click landed.
     const reverse = theme === 'dark' && next === 'light';
-    const origin = reverse
-      ? centerOf(event?.currentTarget ?? null)
-      : resolveRevealOrigin(event, centerOf(event?.currentTarget ?? null));
+    const origin = centerOf(event?.currentTarget ?? null);
     commitTheme(next, origin, reverse);
   }
 
